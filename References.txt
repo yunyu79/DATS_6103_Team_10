@@ -1,0 +1,16 @@
+References to build project - 
+
+https://www.google.com/search?q=E+commerce+shipping+machine+learning+algorithm+for+shipping+prediction&rlz=1C1ONGR_enIN975IN975&oq=E+commerce+shipping+machine+learning+algorithm+for+shipping+prediction&aqs=chrome..69i57j69i64.21192j1j4&sourceid=chrome&ie=UTF-8
+
+https://aws.amazon.com/blogs/industries/how-to-predict-shipments-time-of-delivery-with-cloud-based-machine-learning-models/
+
+https://www.researchgate.net/publication/357967446_A_Machine_Learning_Predictive_Model_for_Shipment_Delay_and_Demand_Forecasting_for_Warehouses_and_Sales_Data
+
+https://www.prefixbox.com/blog/machine-learning-for-ecommerce/
+
+
+https://www.kaggle.com/code/niteshyadav3103/eda-e-commerce-shipping-data
+
+https://www.kaggle.com/code/girtsf/e-commerce-shipping-data-eda-algos
+
+https://medium.com/@williamong1400/part-iii-i-shipping-duration-prediction-16551c93851
