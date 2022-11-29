@@ -1,16 +1,35 @@
 #%%
+from pathlib import Path
 import pandas as pd
 import numpy as np
 import seaborn as sns
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn import preprocessing 
+from sklearn.preprocessing import LabelEncoder
+%matplotlib inline
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn import datasets, linear_model, metrics
+from sklearn.metrics import  confusion_matrix
+from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.metrics import accuracy_score, plot_confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix
 
 sns.set_style("whitegrid")
 # %%
-data = pd.read_csv(r"D:/GraSem1/DS6103/FinalProject/Train.csv")
+data = pd.read_csv("dataset.csv")
 data
 # %%
 data.info()
 data.isna().sum() / len(data)
 # %%
+# drop column that we are not using
 data.drop(columns=['ID'], inplace=True)
 data.info()
 
