@@ -20,6 +20,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.metrics import accuracy_score, plot_confusion_matrix
 from sklearn.metrics import classification_report, confusion_matrix
+import plotly.express as px
+
 
 sns.set_style("whitegrid")
 # %%
@@ -179,7 +181,6 @@ plt.show()
 
 
 # %%
-import plotly.express as px
 integer_columns = data.select_dtypes(include = ['int64'])
 integer_columns.head()
 reached_on_time_y_n = integer_columns['Reached.on.Time_Y.N'].value_counts().reset_index()
@@ -220,4 +221,26 @@ plt.figure(figsize = (15, 7))
 sns.boxplot(x="Customer_care_calls", y="Discount_offered", hue="Reached.on.Time_Y.N", palette={0: "y", 1: "b"}, data=data).set(title = "do calls and discount affect delivery?")
 sns.despine(left=True)
 plt.show()
+
+# %% WEIGHT KDE Histogram
+sns.set_theme(style="ticks", palette="pastel")
+sns.histplot(data, x="Weight_in_gms", kde = True, hue = "Reached.on.Time_Y.N", multiple = "stack")
+
+# %% Boxplot for weight against all vars
+
+cols1 = ['Warehouse_block', 'Mode_of_Shipment', 'Customer_care_calls', 'Customer_rating', 'Prior_purchases', 'Product_importance', 'Gender']
+plt.figure(figsize = (16, 28))
+sns.set_theme(style="ticks", palette="pastel")
+nplot = 1
+for i in range(len(cols1)):
+    if nplot <= len(cols1):
+        ax = plt.subplot(4, 2, nplot)
+        sns.boxplot(y='Weight_in_gms', x = cols1[i], hue ='Reached.on.Time_Y.N', data = data, ax = ax)
+        plt.title(f"\n{cols1[i]} Counts", fontsize = 15)
+        nplot += 1
+plt.show()
+# %%
+
+sns.scatterplot(data, x="Cost_of_the_Product", y="Weight_in_gms", hue="Reached.on.Time_Y.N", edgecolor = 'black')
+
 # %%
