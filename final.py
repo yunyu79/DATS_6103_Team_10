@@ -21,6 +21,7 @@ from sklearn.model_selection import RandomizedSearchCV
 from sklearn.metrics import accuracy_score, plot_confusion_matrix
 from sklearn.metrics import classification_report, confusion_matrix
 import plotly.express as px
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 
 sns.set_style("whitegrid")
@@ -36,37 +37,47 @@ data.drop(columns=['ID'], inplace=True)
 data.info()
 
 # %%
-#non-delay delivery
-data[data['Reached.on.Time_Y.N'] == 0].describe().T
+# differences between on-time and delayed delivery
+data.groupby("Reached.on.Time_Y.N").describe().T
 # %%
-print(sns.boxplot(data['Customer_rating']))
-print(sns.boxplot(data['Cost_of_the_Product']))
-#%% 
-#only one column may need to remove outliers
-print(sns.boxplot(data['Prior_purchases']))
-#%%
-print(sns.boxplot(data['Discount_offered']))
-#%%
-print(sns.boxplot(data['Weight_in_gms']))
+# boxplots for On-time delivery
+integer_cols = data.select_dtypes(include = ['int64'])
+(integer_cols.head())
+intcols = integer_cols.columns
+intcols21 = intcols.drop(["Reached.on.Time_Y.N"])
+plt.figure(figsize = (16, 20))
+sns.set_theme(style="ticks", palette="pastel")
+nplot = 1
+for i in range(len(intcols21)):
+    if nplot <= len(intcols21):
+        ax = plt.subplot(4, 2, nplot)
+        sns.boxplot(x = intcols21[i], data = data, ax = ax)
+        plt.title("Boxplots for On-time delivery by "f"{intcols21[i]}" , fontsize = 13)
+        nplot += 1
+plt.show()
 
 #%%
 # Pairplots for integer columns (Initial EDA)
-integer_cols = data.select_dtypes(include = ['int64'])
-print(integer_cols.head())
-intcols = integer_cols.columns
+sns.pairplot(data = integer_cols, hue = "Reached.on.Time_Y.N")
 # %%
 # counts plots for every column
-cols = ['Warehouse_block', 'Mode_of_Shipment', 'Customer_care_calls', 'Customer_rating', 'Prior_purchases', 'Product_importance', 'Gender', 'Reached.on.Time_Y.N']
+cols = ['Warehouse_block', 'Mode_of_Shipment', 'Customer_care_calls', 'Customer_rating', 'Prior_purchases', 'Product_importance', 'Gender']
 plt.figure(figsize = (16, 20))
 sns.set_theme(style="ticks", palette="pastel")
 nplot = 1
 for i in range(len(cols)):
     if nplot <= len(cols):
         ax = plt.subplot(4, 2, nplot)
-        sns.countplot(x = cols[i], data = data, ax = ax)
+        sns.countplot(x = cols[i], data = data, ax = ax, hue = "Reached.on.Time_Y.N")
         plt.title(f"\n{cols[i]} Counts", fontsize = 15)
         nplot += 1
 plt.show()
+
+#%%
+# countplot for reached on time
+sns.countplot(x ="Reached.on.Time_Y.N", data = data)
+plt.title("Reached.on.Time_Y.N Counts")
+
 #%%
 # boxplots for On-time delivery 
 intcols21 = intcols.drop(["Reached.on.Time_Y.N"])
@@ -243,4 +254,24 @@ plt.show()
 
 sns.scatterplot(data, x="Cost_of_the_Product", y="Weight_in_gms", hue="Reached.on.Time_Y.N", edgecolor = 'black')
 
-# %%
+# %%# customer rating 
+sns.histplot(data, x = "Customer_rating", hue = "Reached.on.Time_Y.N", multiple = "dodge", bins=10)
+plt.title("Histogram for Customer Rating")
+plt.show()
+
+#%%
+# VIF
+#data['Gender'] = data['Gender'].map({'Male':0, 'Female':1})
+  
+# the independent variables set
+vif_x = integer_cols
+vif_x.drop(columns=["Reached.on.Time_Y.N"], inplace=True)
+  
+# VIF dataframe
+vif_data = pd.DataFrame()
+vif_data["feature"] = vif_x.columns
+  
+# calculating VIF for each feature
+vif_data["VIF"] = [variance_inflation_factor(vif_x.values, i)
+                          for i in range(len(vif_x.columns))]
+vif_data
