@@ -179,3 +179,45 @@ plt.show()
 
 
 # %%
+import plotly.express as px
+integer_columns = data.select_dtypes(include = ['int64'])
+integer_columns.head()
+reached_on_time_y_n = integer_columns['Reached.on.Time_Y.N'].value_counts().reset_index()
+reached_on_time_y_n.columns = ['Reached.on.Time_Y.N', 'value_counts']
+fig = px.pie(reached_on_time_y_n, names = 'Reached.on.Time_Y.N', values = 'value_counts',
+             color_discrete_sequence = px.colors.sequential.Darkmint_r, width = 650, height = 400)
+fig.update_traces(textinfo = 'percent+label')
+# %%
+# distribution plot about "Discount_offered"
+plt.figure(figsize = (15, 7))
+ax = sns.distplot(data['Discount_offered'], color = 'r')
+plt.show()
+# %%
+px.box(data, x = 'Reached.on.Time_Y.N', y = 'Discount_offered',color = 'Reached.on.Time_Y.N')
+# %%
+ware_block_weight = data.groupby(['Warehouse_block'])['Weight_in_gms'].sum().reset_index()
+ware_block_weight
+# %%
+plt.figure(figsize = (11, 7))
+ax = sns.boxplot(x="Product_importance", y="Discount_offered", hue="Reached.on.Time_Y.N", palette={0: "y", 1: "b"}, data=data).set(title = "Do product_importance and discount affect delivery?")
+plt.show()
+
+# %%
+# violinplot about discount + prior + reach or not
+sns.violinplot(x="Prior_purchases", y="Discount_offered", hue="Reached.on.Time_Y.N", split=True, inner="quart",palette={0: "y", 1: "b"}, data=data).set(title = "ethnics, gender, education in world2")
+sns.despine(left=True)
+plt.show()
+
+# %%
+# scatter plot about discount + weight + reach or not
+plt.figure(figsize = (15, 7))
+ax = sns.scatterplot(x='Discount_offered', y='Weight_in_gms', data=data, hue='Reached.on.Time_Y.N')
+plt.show()
+ax = sns.scatterplot(x='Discount_offered', y='Cost_of_the_Product', data=data, hue='Reached.on.Time_Y.N')
+plt.show()
+# %%
+plt.figure(figsize = (15, 7))
+sns.boxplot(x="Customer_care_calls", y="Discount_offered", hue="Reached.on.Time_Y.N", palette={0: "y", 1: "b"}, data=data).set(title = "do calls and discount affect delivery?")
+sns.despine(left=True)
+plt.show()
+# %%
