@@ -20,7 +20,11 @@ from sklearn.metrics import accuracy_score, plot_confusion_matrix
 from sklearn.metrics import classification_report, confusion_matrix
 import plotly.express as px
 from statsmodels.stats.outliers_influence import variance_inflation_factor
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
+from sklearn.metrics import confusion_matrix, accuracy_score
+from sklearn.model_selection import cross_val_score
 
 sns.set_style("whitegrid")
 # %%
@@ -216,13 +220,23 @@ ax = sns.distplot(data['Discount_offered'], color = 'r')
 plt.show()
 
 
+#%%
+# Categorical columns with Discount_offered
+cols_cate_disc = ['Warehouse_block', 'Mode_of_Shipment', 'Product_importance', 'Gender']
+plt.figure(figsize = (15, 15))
+sns.set_theme(style="ticks", palette="pastel")
+nplot = 1
+for i in range(len(cols_cate_disc)):
+    if nplot <= len(cols_cate_disc):
+        ax = plt.subplot(2, 2, nplot)
+        sns.boxplot(y='Discount_offered', x = cols_cate_disc[i], hue ='Reached.on.Time_Y.N', data = data, ax = ax)
+        plt.title(f"\n{cols_cate_disc[i]} Counts", fontsize = 15)
+        nplot += 1
+plt.show()
+
+
 # %%
 px.box(data, x = 'Reached.on.Time_Y.N', y = 'Discount_offered',color = 'Reached.on.Time_Y.N')
-
-
-# %%
-ware_block_weight = data.groupby(['Warehouse_block'])['Weight_in_gms'].sum().reset_index()
-ware_block_weight
 
 
 # %%
@@ -233,7 +247,7 @@ plt.show()
 
 # %%
 # violinplot about discount + prior + reach or not
-sns.violinplot(x="Prior_purchases", y="Discount_offered", hue="Reached.on.Time_Y.N", split=True, inner="quart",palette={0: "y", 1: "b"}, data=data).set(title = "ethnics, gender, education in world2")
+sns.violinplot(x="Prior_purchases", y="Discount_offered", hue="Reached.on.Time_Y.N", split=True, inner="quart",palette={0: "y", 1: "b"}, data=data).set(title = "Do prior_purchases and discount affect delivery?")
 sns.despine(left=True)
 plt.show()
 
@@ -249,7 +263,7 @@ plt.show()
 
 # %%
 plt.figure(figsize = (15, 7))
-sns.boxplot(x="Customer_care_calls", y="Discount_offered", hue="Reached.on.Time_Y.N", palette={0: "y", 1: "b"}, data=data).set(title = "do calls and discount affect delivery?")
+sns.boxplot(x="Customer_care_calls", y="Discount_offered", hue="Reached.on.Time_Y.N", palette={0: "y", 1: "b"}, data=data).set(title = "Do calls and discount affect delivery?")
 sns.despine(left=True)
 plt.show()
 
@@ -303,3 +317,93 @@ vif_data
 
 
 #%%
+# KNN model
+#2. confusion matrix
+# 3. accuracy score
+# 4. classification report
+# 5. cross_val_score
+# 6. mean_squared_error
+# 7. precision_recall_curve
+
+#%%
+# Data Preprocessing
+# Dealing with Warehouse_block
+n = 'Warehouse_block'
+data_copy = data.copy()
+label_1 = pd.get_dummies(data_copy,prefix = n ,columns=[n],drop_first=False)
+label_1.insert(loc=1, column=n, value=data[n].values)
+label_1.drop([n],axis = 1,inplace = True)
+label_1
+
+
+#%%
+# Dealing with Mode_of_Shipment
+n = 'Mode_of_Shipment'
+data_copy = data.copy()
+label_2 = pd.get_dummies(label_1,prefix = n ,columns=[n],drop_first=False)
+label_2.insert(loc=1, column=n, value=data[n].values)
+label_2.drop([n],axis = 1,inplace = True)
+label_2
+
+#%%
+# Dealing with Mode_of_Shipment
+n = 'Product_importance'
+data_copy = data.copy()
+label_3 = pd.get_dummies(label_2,prefix = n ,columns=[n],drop_first=False)
+label_3.insert(loc=5, column=n, value=data[n].values)
+label_3.drop([n],axis = 1,inplace = True)
+label_3
+
+#%%
+# Dealing with Gender
+n = 'Gender'
+data_copy = data.copy()
+label_4 = pd.get_dummies(label_3,prefix = n ,columns=[n],drop_first=False)
+label_4.insert(loc=5, column=n, value=data[n].values)
+label_4.drop([n],axis = 1,inplace = True)
+label_4
+
+#%%
+label_4 = label_4[['Customer_care_calls', 'Customer_rating', 'Cost_of_the_Product',
+       'Prior_purchases', 'Discount_offered', 'Weight_in_gms',
+       'Warehouse_block_A', 'Warehouse_block_B',
+       'Warehouse_block_C', 'Warehouse_block_D', 'Warehouse_block_F',
+       'Mode_of_Shipment_Flight', 'Mode_of_Shipment_Road',
+       'Mode_of_Shipment_Ship', 'Product_importance_high',
+       'Product_importance_low', 'Product_importance_medium', 'Gender_F',
+       'Gender_M','Reached.on.Time_Y.N',]]
+label_4
+
+#%%
+
+from sklearn.neighbors import KNeighborsClassifier
+
+X = label_4.iloc[:, :-1].values
+y = label_4.iloc[:, -1].values
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
+
+# Feature Scaling
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.transform(X_test)
+knn = KNeighborsClassifier()
+knn.fit(X_train,y_train)
+pred = knn.predict(X_test)
+print(pred)
+print(classification_report(y_test,pred))
+#%%
+classifier = KNeighborsClassifier(n_neighbors = 5, metric = 'minkowski', p = 2)
+classifier.fit(X_train, y_train)
+
+# Making the Confusion Matrix
+y_pred = classifier.predict(X_test)
+cm = confusion_matrix(y_test, y_pred)
+
+print(cm)
+accuracy_score(y_test, y_pred)
+
+# Applying k-Fold Cross Validation
+accuracies = cross_val_score(estimator = classifier, X = X_train, y = y_train, cv = 10)
+
+
+# %%
