@@ -21,11 +21,13 @@ from sklearn.metrics import classification_report, confusion_matrix
 import plotly.express as px
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score, roc_curve
+
+from sklearn.metrics import confusion_matrix, accuracy_score
+from sklearn.model_selection import cross_val_score
 
 sns.set_style("whitegrid")
 # %%
@@ -406,8 +408,6 @@ accuracy_score(y_test, y_pred)
 # Applying k-Fold Cross Validation
 accuracies = cross_val_score(estimator = classifier, X = X_train, y = y_train, cv = 10)
 
-
-
 #%%
 # Logistic Regression 
 
@@ -462,3 +462,4 @@ plt.ylabel('True Positive Rate')
 plt.legend()
 # show the plot
 plt.show()
+# %%
