@@ -21,7 +21,10 @@ from sklearn.metrics import classification_report, confusion_matrix
 import plotly.express as px
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import confusion_matrix, accuracy_score
+from sklearn.model_selection import cross_val_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score, roc_curve
 
 from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.model_selection import cross_val_score
@@ -405,5 +408,58 @@ accuracy_score(y_test, y_pred)
 # Applying k-Fold Cross Validation
 accuracies = cross_val_score(estimator = classifier, X = X_train, y = y_train, cv = 10)
 
+#%%
+# Logistic Regression 
 
+# encoding
+data['Gender'] = data['Gender'].map({'M':0, 'F':1})
+data['Mode_of_Shipment'] = data['Mode_of_Shipment'].map({'Flight': 1, 'Ship':2, 'Road':3})
+data['Product_importance'] = data['Product_importance'].map({'high': 1, 'medium':2, 'low':3})
+data['Warehouse_block'] = data['Warehouse_block'].map({'A': 1, 'B':2, 'C':3, 'D':4, 'F':5})
+
+#%%
+## split data
+X = data.drop("Reached.on.Time_Y.N", axis = 1)
+Y = data["Reached.on.Time_Y.N"]
+xtrain, xtest, ytrain, ytest = train_test_split(X, Y, train_size = 0.8, random_state=1)
+
+#%%
+logitmodel = LogisticRegression()
+logitmodel.fit(xtrain, ytrain)
+print('Logit model accuracy (with the test set):', logitmodel.score(xtest, ytest))
+print('Logit model accuracy (with the train set):', logitmodel.score(xtrain, ytrain))
+print('Logit model Coefficient:', logitmodel.coef_)
+print('Logit model Intercept:', logitmodel.intercept_)
+
+# classification report
+y_true, y_pred = ytest, logitmodel.predict(xtest)
+print(classification_report(y_true, y_pred))
+
+# %%
+
+# generate a no skill prediction 
+ns_probs = [0 for _ in range(len(ytest))]
+# predict probabilities
+lr_probs = logitmodel.predict_proba(xtest)
+# keep probabilities for the positive outcome only
+lr_probs = lr_probs[:, 1]
+# calculate scores
+ns_auc = roc_auc_score(ytest, ns_probs)
+lr_auc = roc_auc_score(ytest, lr_probs)
+# summarize scores
+print('No Skill: ROC AUC=%.3f' % (ns_auc))
+print('Logistic: ROC AUC=%.3f' % (lr_auc))
+# calculate roc curves
+ns_fpr, ns_tpr, _ = roc_curve(ytest, ns_probs)
+lr_fpr, lr_tpr, _ = roc_curve(ytest, lr_probs)
+# plot the roc curve for the model
+plt.plot(ns_fpr, ns_tpr, linestyle='--', label='No Skill')
+plt.plot(lr_fpr, lr_tpr, marker='.', label='Logistic')
+# axis labels
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+# show the legend
+plt.legend()
+# show the plot
+plt.show()
 # %%
