@@ -443,19 +443,19 @@ print(classification_report(y_true, y_pred))
 # %%
 
 # generate a no skill prediction 
-ns_probs = [0 for _ in range(len(y_test))]
+ns_probs_rf = [0 for _ in range(len(y_test))]
 # predict probabilities
 lr_probs = logitmodel.predict_proba(X_test)
 # keep probabilities for the positive outcome only
 lr_probs = lr_probs[:, 1]
 # calculate scores
-ns_auc = roc_auc_score(y_test, ns_probs)
+ns_auc = roc_auc_score(y_test, ns_probs_rf)
 lr_auc = roc_auc_score(y_test, lr_probs)
 # summarize scores
 print('No Skill: ROC AUC=%.3f' % (ns_auc))
 print('Logistic: ROC AUC=%.3f' % (lr_auc))
 # calculate roc curves
-ns_fpr, ns_tpr, _ = roc_curve(y_test, ns_probs)
+ns_fpr, ns_tpr, _ = roc_curve(y_test, ns_probs_rf)
 lr_fpr, lr_tpr, _ = roc_curve(y_test, lr_probs)
 # plot the roc curve for the model
 plt.plot(ns_fpr, ns_tpr, linestyle='--', label='No Skill')
@@ -467,4 +467,55 @@ plt.ylabel('True Positive Rate')
 plt.legend()
 # show the plot
 plt.show()
+
+#%%
+# Random forest
+
+RandomForestModel = RandomForestClassifier(class_weight='balanced')
+RandomForestModel.fit(X_train,y_train)
+RandomForestPredict = RandomForestModel.predict(X_test)
+print(RandomForestPredict)
+print(classification_report(y_test,RandomForestPredict))
+
+# Making the Confusion Matrix
+
+cmRf = confusion_matrix(y_test, RandomForestPredict)
+
+print(cmRf)
+accuracyRf = accuracy_score(y_test, RandomForestPredict)
+print(accuracyRf)
+
+# Applying k-Fold Cross Validation
+meanaccuraciesRf = cross_val_score(estimator = RandomForestModel, X = X_train, y = y_train, cv = 10).mean()
+print("Mean Accuracy Score is - ", meanaccuraciesRf)
+
+# ROC AUC Curve and Values
+
+# generate a no skill prediction 
+ns_probs_rf = [0 for _ in range(len(y_test))]
+# predict probabilities
+lr_probs_rf = RandomForestModel.predict_proba(X_test)
+# keep probabilities for the positive outcome only
+lr_probs_rf = lr_probs_rf[:, 1]
+# calculate scores
+ns_auc_rf = roc_auc_score(y_test, ns_probs_rf)
+lr_auc_rf = roc_auc_score(y_test, lr_probs_rf)
+# summarize scores
+print('No Skill: ROC AUC=%.3f' % (ns_auc_rf))
+print('Logistic: ROC AUC=%.3f' % (lr_auc_rf))
+# calculate roc curves
+ns_fpr_rf, ns_tpr_rf, _ = roc_curve(y_test, ns_probs_rf)
+lr_fpr_rf, lr_tpr_rf, _ = roc_curve(y_test, lr_probs_rf)
+# plot the roc curve for the model
+plt.plot(ns_fpr_rf, ns_tpr_rf, linestyle='--', label='No Skill')
+plt.plot(lr_fpr_rf, lr_tpr_rf, marker='.', label='Random Forest')
+# axis labels
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+# show the legend
+plt.legend()
+# show the plot
+plt.show()
+
+
 # %%
