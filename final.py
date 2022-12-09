@@ -412,46 +412,51 @@ accuracies = cross_val_score(estimator = classifier, X = X_train, y = y_train, c
 # Logistic Regression 
 
 # encoding
-data['Gender'] = data['Gender'].map({'M':0, 'F':1})
-data['Mode_of_Shipment'] = data['Mode_of_Shipment'].map({'Flight': 1, 'Ship':2, 'Road':3})
-data['Product_importance'] = data['Product_importance'].map({'high': 1, 'medium':2, 'low':3})
-data['Warehouse_block'] = data['Warehouse_block'].map({'A': 1, 'B':2, 'C':3, 'D':4, 'F':5})
+# data['Gender'] = data['Gender'].map({'M':0, 'F':1})
+# data['Mode_of_Shipment'] = data['Mode_of_Shipment'].map({'Flight': 1, 'Ship':2, 'Road':3})
+# data['Product_importance'] = data['Product_importance'].map({'high': 1, 'medium':2, 'low':3})
+# data['Warehouse_block'] = data['Warehouse_block'].map({'A': 1, 'B':2, 'C':3, 'D':4, 'F':5})
 
 #%%
 ## split data
-X = data.drop("Reached.on.Time_Y.N", axis = 1)
-Y = data["Reached.on.Time_Y.N"]
-xtrain, xtest, ytrain, ytest = train_test_split(X, Y, train_size = 0.8, random_state=1)
+# X = data.drop("Reached.on.Time_Y.N", axis = 1)
+# Y = data["Reached.on.Time_Y.N"]
+# xtrain, xtest, ytrain, ytest = train_test_split(X, Y, train_size = 0.8, random_state=1)
+
+#%%
+# X = label_4.drop("Reached.on.Time_Y.N", axis = 1)
+# Y = label_4["Reached.on.Time_Y.N"]
+#xtrain, xtest, ytrain, ytest = train_test_split(X, Y, train_size = 0.8, random_state=1)
 
 #%%
 logitmodel = LogisticRegression()
-logitmodel.fit(xtrain, ytrain)
-print('Logit model accuracy (with the test set):', logitmodel.score(xtest, ytest))
-print('Logit model accuracy (with the train set):', logitmodel.score(xtrain, ytrain))
+logitmodel.fit(X_train, y_train)
+print('Logit model accuracy (with the test set):', logitmodel.score(X_test, y_test))
+print('Logit model accuracy (with the train set):', logitmodel.score(X_train, y_train))
 print('Logit model Coefficient:', logitmodel.coef_)
 print('Logit model Intercept:', logitmodel.intercept_)
 
 # classification report
-y_true, y_pred = ytest, logitmodel.predict(xtest)
+y_true, y_pred = y_test, logitmodel.predict(X_test)
 print(classification_report(y_true, y_pred))
 
 # %%
 
 # generate a no skill prediction 
-ns_probs = [0 for _ in range(len(ytest))]
+ns_probs = [0 for _ in range(len(y_test))]
 # predict probabilities
-lr_probs = logitmodel.predict_proba(xtest)
+lr_probs = logitmodel.predict_proba(X_test)
 # keep probabilities for the positive outcome only
 lr_probs = lr_probs[:, 1]
 # calculate scores
-ns_auc = roc_auc_score(ytest, ns_probs)
-lr_auc = roc_auc_score(ytest, lr_probs)
+ns_auc = roc_auc_score(y_test, ns_probs)
+lr_auc = roc_auc_score(y_test, lr_probs)
 # summarize scores
 print('No Skill: ROC AUC=%.3f' % (ns_auc))
 print('Logistic: ROC AUC=%.3f' % (lr_auc))
 # calculate roc curves
-ns_fpr, ns_tpr, _ = roc_curve(ytest, ns_probs)
-lr_fpr, lr_tpr, _ = roc_curve(ytest, lr_probs)
+ns_fpr, ns_tpr, _ = roc_curve(y_test, ns_probs)
+lr_fpr, lr_tpr, _ = roc_curve(y_test, lr_probs)
 # plot the roc curve for the model
 plt.plot(ns_fpr, ns_tpr, linestyle='--', label='No Skill')
 plt.plot(lr_fpr, lr_tpr, marker='.', label='Logistic')
