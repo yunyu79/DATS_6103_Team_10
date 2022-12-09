@@ -378,7 +378,6 @@ label_4 = label_4[['Customer_care_calls', 'Customer_rating', 'Cost_of_the_Produc
 label_4
 
 #%%
-
 from sklearn.neighbors import KNeighborsClassifier
 
 X = label_4.iloc[:, :-1].values
@@ -389,24 +388,63 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 sc = StandardScaler()
 X_train = sc.fit_transform(X_train)
 X_test = sc.transform(X_test)
-knn = KNeighborsClassifier()
-knn.fit(X_train,y_train)
-pred = knn.predict(X_test)
-print(pred)
-print(classification_report(y_test,pred))
+
+
 #%%
-classifier = KNeighborsClassifier(n_neighbors = 5, metric = 'minkowski', p = 2)
+#ACC for KNN
+fig,ax=plt.subplots(figsize=(10,10))
+k_list=np.arange(1,11)
+knn_acc={} # To store k and mse pairs
+for i in k_list:
+    knn=KNeighborsClassifier(n_neighbors = i)
+    model_knn=knn.fit(X_train,y_train)
+    y_pred=model_knn.predict(X_test)
+    acc = accuracy_score(y_test, y_pred)
+    knn_acc[i]=acc
+#Plotting
+ax.plot(knn_acc.keys(),knn_acc.values())
+ax.set_xlabel('K-VALUE', fontsize=20)
+ax.set_ylabel('ACC' ,fontsize=20)
+ax.set_title('ACC PLOT' ,fontsize=28)
+
+
+#%%
+#MSE for KNN
+fig,ax=plt.subplots(figsize=(10,10))
+k_list=np.arange(1,11)
+knn_mse={} # To store k and mse pairs
+for i in k_list:
+#Knn Model Creation
+    knn=KNeighborsClassifier(n_neighbors = i)
+    model_knn=knn.fit(X_train,y_train)
+    y_pred=model_knn.predict(X_test)
+#Storing MSE 
+    mse=mean_squared_error(y_test,y_pred)
+    knn_mse[i]=mse
+#Plotting the results
+ax.plot(knn_mse.keys(),knn_mse.values())
+ax.set_xlabel('K-VALUE', fontsize=20)
+ax.set_ylabel('MSE' ,fontsize=20)
+ax.set_title('ELBOW PLOT' ,fontsize=28)
+
+print("We chose k-neibors = 4, since when n = 4, ACC is highest and MSE is lowest.")
+
+#%%
+classifier = KNeighborsClassifier(n_neighbors = 4, metric = 'minkowski', p = 2)
 classifier.fit(X_train, y_train)
 
 # Making the Confusion Matrix
 y_pred = classifier.predict(X_test)
+print(y_pred)
+print(classification_report(y_test, y_pred))
 cm = confusion_matrix(y_test, y_pred)
-
-print(cm)
-accuracy_score(y_test, y_pred)
+print(f'The confusion matrix is {cm}')
+print(f'Test accuracy is {accuracy_score(y_test, y_pred)}')
 
 # Applying k-Fold Cross Validation
 accuracies = cross_val_score(estimator = classifier, X = X_train, y = y_train, cv = 10)
+print(f'The cross validation is {accuracies}')
+
 
 #%%
 # Logistic Regression 
