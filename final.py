@@ -321,7 +321,7 @@ vif_data
 
 #%%
 # KNN model
-#2. confusion matrix
+# 2. confusion matrix
 # 3. accuracy score
 # 4. classification report
 # 5. cross_val_score
@@ -442,8 +442,8 @@ print(f'The confusion matrix is {cm}')
 print(f'Test accuracy is {accuracy_score(y_test, y_pred)}')
 
 # Applying k-Fold Cross Validation
-accuracies = cross_val_score(estimator = classifier, X = X_train, y = y_train, cv = 10)
-print(f'The cross validation is {accuracies}')
+accuracies = cross_val_score(estimator = classifier, X = X_train, y = y_train, cv = 10).mean()
+print(f'The mean accuracy is {accuracies}')
 
 
 #%%
