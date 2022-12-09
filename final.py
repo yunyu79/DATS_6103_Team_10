@@ -7,41 +7,25 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn import preprocessing 
 from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import datasets, linear_model, metrics
 from sklearn.metrics import  confusion_matrix
 from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import OneHotEncoder
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.metrics import accuracy_score, plot_confusion_matrix
-from sklearn.metrics import classification_report
-from sklearn.metrics import roc_auc_score, roc_curve
+from sklearn.metrics import classification_report, confusion_matrix
 import plotly.express as px
 from statsmodels.stats.outliers_influence import variance_inflation_factor
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-
-=======
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import confusion_matrix, accuracy_score
+from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score, roc_curve
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.metrics import confusion_matrix, accuracy_score
-from sklearn.model_selection import cross_val_score
->>>>>>> Stashed changes
-=======
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-
-from sklearn.metrics import confusion_matrix, accuracy_score
-from sklearn.model_selection import cross_val_score
->>>>>>> Stashed changes
 
 sns.set_style("whitegrid")
 # %%
@@ -423,7 +407,7 @@ accuracy_score(y_test, y_pred)
 accuracies = cross_val_score(estimator = classifier, X = X_train, y = y_train, cv = 10)
 
 
-# %%
+
 #%%
 # Logistic Regression 
 
@@ -452,37 +436,6 @@ y_true, y_pred = ytest, logitmodel.predict(xtest)
 print(classification_report(y_true, y_pred))
 
 # %%
-<<<<<<< Updated upstream
-=======
-#%%
-# Logistic Regression 
-
-# encoding
-data['Gender'] = data['Gender'].map({'M':0, 'F':1})
-data['Mode_of_Shipment'] = data['Mode_of_Shipment'].map({'Flight': 1, 'Ship':2, 'Road':3})
-data['Product_importance'] = data['Product_importance'].map({'high': 1, 'medium':2, 'low':3})
-data['Warehouse_block'] = data['Warehouse_block'].map({'A': 1, 'B':2, 'C':3, 'D':4, 'F':5})
-
-#%%
-## split data
-X = data.drop("Reached.on.Time_Y.N", axis = 1)
-Y = data["Reached.on.Time_Y.N"]
-xtrain, xtest, ytrain, ytest = train_test_split(X, Y, train_size = 0.8, random_state=1)
-
-#%%
-logitmodel = LogisticRegression()
-logitmodel.fit(xtrain, ytrain)
-print('Logit model accuracy (with the test set):', logitmodel.score(xtest, ytest))
-print('Logit model accuracy (with the train set):', logitmodel.score(xtrain, ytrain))
-print('Logit model Coefficient:', logitmodel.coef_)
-print('Logit model Intercept:', logitmodel.intercept_)
-
-# classification report
-y_true, y_pred = ytest, logitmodel.predict(xtest)
-print(classification_report(y_true, y_pred))
-
-# %%
->>>>>>> Stashed changes
 
 # generate a no skill prediction 
 ns_probs = [0 for _ in range(len(ytest))]
