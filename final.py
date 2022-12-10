@@ -302,24 +302,6 @@ sns.histplot(data, x = "Customer_rating", hue = "Reached.on.Time_Y.N", multiple 
 plt.title("Histogram for Customer Rating")
 plt.show()
 
-
-#%%
-# VIF
-#data['Gender'] = data['Gender'].map({'Male':0, 'Female':1})
-  
-# the independent variables set
-vif_x = integer_cols
-vif_x.drop(columns=["Reached.on.Time_Y.N"], inplace=True)
-  
-# VIF dataframe
-vif_data = pd.DataFrame()
-vif_data["feature"] = vif_x.columns
-  
-# calculating VIF for each feature
-vif_data["VIF"] = [variance_inflation_factor(vif_x.values, i)
-                          for i in range(len(vif_x.columns))]
-vif_data
-
 #%%
 #Statistical Test
 
