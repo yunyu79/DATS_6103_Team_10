@@ -30,10 +30,11 @@ from scipy.stats import chi2_contingency
 from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.model_selection import cross_val_score
 from statsmodels.formula.api import ols
+import statsmodels.api as sm
 
 sns.set_style("whitegrid")
 # %%
-data = pd.read_csv("dataset.csv")
+data = pd.read_csv("C:/Users/patha/OneDrive/Desktop/MS in USA/#GWU/SEMESTER 1/DATS 6103 INTO TO DATA MINING/Git/DATS_6103_Team_10/dataset.csv")
 data
 # %%
 data.info()
@@ -561,13 +562,14 @@ RandomForestPredict = RandomForestModel.predict(X_test)
 print(RandomForestPredict)
 print(classification_report(y_test,RandomForestPredict))
 
-# Making the Confusion Matrix
+# Confusion Matrix, Train,test and Model Accuracy
+nl = '\n'
+print(f'The confusion matrix is - {nl}{confusion_matrix(y_test, RandomForestPredict)}')
+print(f'Train accuracy is {RandomForestModel.score(X_train, y_train)}')
+print(f'Test accuracy is {RandomForestModel.score(X_test, y_test)}')
+print(f'Model accuracy is {accuracy_score(y_test, RandomForestPredict)}')
 
-cmRf = confusion_matrix(y_test, RandomForestPredict)
 
-print(cmRf)
-accuracyRf = accuracy_score(y_test, RandomForestPredict)
-print(accuracyRf)
 
 # Applying k-Fold Cross Validation
 meanaccuraciesRf = cross_val_score(estimator = RandomForestModel, X = X_train, y = y_train, cv = 10).mean()
@@ -615,7 +617,7 @@ X_train2 = sc.fit_transform(X_train2)
 X_test2 = sc.transform(X_test2)
 
 #%%
-# improved knn
+# Improved knn
 from sklearn.neighbors import KNeighborsClassifier
 #ACC for KNN
 fig,ax=plt.subplots(figsize=(10,10))
@@ -709,3 +711,55 @@ plt.legend()
 # show the plot
 plt.show()
 
+
+#%%
+
+# Random Forest after dropping insignificant features 
+
+RandomForestModel2 = RandomForestClassifier(class_weight='balanced')
+RandomForestModel2.fit(X_train2,y_train2)
+RandomForestPredict2 = RandomForestModel2.predict(X_test2)
+print(RandomForestPredict2)
+print(classification_report(y_test2,RandomForestPredict2))
+
+## Confusion Matrix, Train,test and Model Accuracy
+nl = '\n'
+print(f'The confusion matrix is - {nl}{confusion_matrix(y_test2, RandomForestPredict2)}')
+print(f'Train accuracy is {RandomForestModel2.score(X_train2, y_train2)}')
+print(f'Test accuracy is {RandomForestModel2.score(X_test2, y_test2)}')
+print(f'Model accuracy is {accuracy_score(y_test2, RandomForestPredict2)}')
+
+
+# Applying k-Fold Cross Validation
+meanaccuraciesRf2 = cross_val_score(estimator = RandomForestModel2, X = X_train2, y = y_train2, cv = 10).mean()
+print("Mean Accuracy Score is - ", meanaccuraciesRf2)
+
+# ROC AUC Curve and Values
+
+# generate a no skill prediction 
+ns_probs_rf2 = [0 for _ in range(len(y_test2))]
+# predict probabilities
+lr_probs_rf2 = RandomForestModel2.predict_proba(X_test2)
+# keep probabilities for the positive outcome only
+lr_probs_rf2 = lr_probs_rf2[:, 1]
+# calculate scores
+ns_auc_rf2 = roc_auc_score(y_test2, ns_probs_rf2)
+lr_auc_rf2 = roc_auc_score(y_test2, lr_probs_rf2)
+# summarize scores
+print('No Skill: ROC AUC=%.3f' % (ns_auc_rf2))
+print('Logistic: ROC AUC=%.3f' % (lr_auc_rf2))
+# calculate roc curves
+ns_fpr_rf2, ns_tpr_rf2, _ = roc_curve(y_test2, ns_probs_rf2)
+lr_fpr_rf2, lr_tpr_rf2, _ = roc_curve(y_test2, lr_probs_rf2)
+# plot the roc curve for the model
+plt.plot(ns_fpr_rf2, ns_tpr_rf2, linestyle='--', label='No Skill')
+plt.plot(lr_fpr_rf2, lr_tpr_rf2, marker='.', label='Random Forest 2')
+# axis labels
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+# show the legend
+plt.legend()
+# show the plot
+plt.show()
+
+# %%
