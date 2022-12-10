@@ -360,19 +360,6 @@ print("p values for Warehouse Number, Mode of Shipment, Gender, Product importan
 # 6. mean_squared_error
 # 7. precision_recall_curve
 
-#%%
-# data split
-data.drop(columns=['Warehouse_block', 'Mode_of_Shipment', 'Product_importance', 'Gender'], inplace=True)
-X = data.iloc[:, :-1].values
-y = data.iloc[:, -1].values
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
-
-# Feature Scaling
-sc = StandardScaler()
-X_train = sc.fit_transform(X_train)
-X_test = sc.transform(X_test)
-
-
 
 #%%
 # Data Preprocessing
@@ -612,3 +599,53 @@ plt.ylabel('True Positive Rate')
 plt.legend()
 # show the plot
 plt.show()
+
+#%%
+# data split
+data2 = data.copy()
+data2.drop(columns=['Warehouse_block', 'Mode_of_Shipment', 'Product_importance', 'Gender'], inplace=True)
+X2 = data2.iloc[:, :-1].values
+y2= data2.iloc[:, -1].values
+X_train2, X_test2, y_train2, y_test2 = train_test_split(X2, y2, test_size = 0.2, random_state = 0)
+
+# Feature Scaling
+sc = StandardScaler()
+X_train2 = sc.fit_transform(X_train2)
+X_test2 = sc.transform(X_test2)
+
+#%%
+# improved knn
+from sklearn.neighbors import KNeighborsClassifier
+#ACC for KNN
+fig,ax=plt.subplots(figsize=(10,10))
+k_list=np.arange(1,11)
+knn_acc2={} # To store k and mse pairs
+for i in k_list:
+    knn=KNeighborsClassifier(n_neighbors = i)
+    model_knn=knn.fit(X_train2,y_train2)
+    y_pred2=model_knn.predict(X_test2)
+    acc = accuracy_score(y_test2, y_pred2)
+    knn_acc2[i]=acc
+#Plotting
+ax.plot(knn_acc2.keys(),knn_acc2.values())
+ax.set_xlabel('K-VALUE', fontsize=20)
+ax.set_ylabel('ACC' ,fontsize=20)
+ax.set_title('ACC PLOT' ,fontsize=28)
+
+#%%
+classifier = KNeighborsClassifier(n_neighbors = 6, metric = 'minkowski', p = 2)
+classifier.fit(X_train2, y_train2)
+
+# Making the Confusion Matrix
+y_pred2 = classifier.predict(X_test2)
+print(y_pred2)
+print(classification_report(y_test2, y_pred2))
+cm = confusion_matrix(y_test2, y_pred2)
+print(f'The confusion matrix is {cm}')
+print(f'Test accuracy is {accuracy_score(y_test2, y_pred2)}')
+
+# Applying k-Fold Cross Validation
+accuracies = cross_val_score(estimator = classifier, X = X_train2, y = y_train2, cv = 10).mean()
+print(f'The mean accuracy is {accuracies}')
+
+# %%
