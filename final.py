@@ -374,8 +374,6 @@ X_test = sc.transform(X_test)
 
 
 
-
-
 #%%
 # Data Preprocessing
 # Dealing with Warehouse_block
