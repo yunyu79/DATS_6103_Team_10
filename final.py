@@ -27,9 +27,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.metrics import mean_squared_error
 from scipy.stats import chi2_contingency
-
 from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.model_selection import cross_val_score
+from statsmodels.formula.api import ols
 
 sns.set_style("whitegrid")
 # %%
@@ -321,10 +321,29 @@ vif_data["VIF"] = [variance_inflation_factor(vif_x.values, i)
 vif_data
 
 #%%
-#Statistical Test
-
-#ANOVA
-
+# Statistical Test
+# ANOVA
+aov_Customer_care_calls = ols('ReachedOnTime ~ Customer_care_calls', data = Xvar).fit()
+aov_Customer_care_callsT = sm.stats.anova_lm(aov_Customer_care_calls, typ=2)
+print(aov_Customer_care_callsT)
+aov_Customer_rating = ols('ReachedOnTime ~ Customer_rating', data = Xvar).fit()
+aov_Customer_ratingT = sm.stats.anova_lm(aov_Customer_rating, typ=2)
+print(aov_Customer_ratingT)
+aov_Cost_of_the_Product = ols('ReachedOnTime ~ Cost_of_the_Product', data = Xvar).fit()
+aov_Cost_of_the_ProductT = sm.stats.anova_lm(aov_Cost_of_the_Product, typ=2)
+print(aov_Cost_of_the_ProductT)
+aov_Prior_purchases = ols('ReachedOnTime ~ Prior_purchases', data = Xvar).fit()
+aov_Prior_purchasesT = sm.stats.anova_lm(aov_Prior_purchases, typ=2)
+print(aov_Prior_purchasesT)
+aov_Product_importance = ols('ReachedOnTime ~ Product_importance', data = Xvar).fit()
+aov_Product_importanceT = sm.stats.anova_lm(aov_Product_importance, typ=2)
+print(aov_Product_importanceT)
+aov_Discount_offered = ols('ReachedOnTime ~ Discount_offered', data = Xvar).fit()
+aov_Discount_offeredT = sm.stats.anova_lm(aov_Discount_offered, typ=2)
+print(aov_Discount_offeredT)
+aov_Weight_in_gms = ols('ReachedOnTime ~ Weight_in_gms', data = Xvar).fit()
+aov_Weight_in_gmst = sm.stats.anova_lm(aov_Weight_in_gms, typ=2)
+print(aov_Weight_in_gmst)
 
 
 #CHI-Squared tests B/W Categorical Variables
@@ -649,3 +668,40 @@ accuracies = cross_val_score(estimator = classifier, X = X_train2, y = y_train2,
 print(f'The mean accuracy is {accuracies}')
 
 # %%
+# Logitmodel with the second data
+logitmodel2 = LogisticRegression()
+logitmodel2.fit(X_train2, y_train2)
+print('Logit model accuracy (with the test set):', logitmodel2.score(X_test2, y_test2))
+print('Logit model accuracy (with the train set):', logitmodel2.score(X_train2, y_train2))
+print('Logit model Coefficient:', logitmodel2.coef_)
+print('Logit model Intercept:', logitmodel2.intercept_)
+
+# classification report
+y_true2, y_logitpred2 = y_test2, logitmodel2.predict(X_test2)
+print(classification_report(y_true2, y_logitpred2))
+#%%
+# generate a no skill prediction 
+ns_probs_rf2 = [0 for _ in range(len(y_test2))]
+# predict probabilities
+lr_probs2 = logitmodel2.predict_proba(X_test2)
+# keep probabilities for the positive outcome only
+lr_probs2 = lr_probs2[:, 1]
+# calculate scores
+ns_auc2 = roc_auc_score(y_test2, ns_probs_rf2)
+lr_auc2 = roc_auc_score(y_test2, lr_probs2)
+# summarize scores
+print('No Skill: ROC AUC=%.3f' % (ns_auc2))
+print('Logistic: ROC AUC=%.3f' % (lr_auc2))
+# calculate roc curves
+ns_fpr2, ns_tpr2, _ = roc_curve(y_test2, ns_probs_rf2)
+lr_fpr2, lr_tpr2, _ = roc_curve(y_test2, lr_probs2)
+# plot the roc curve for the model
+plt.plot(ns_fpr2, ns_tpr2, linestyle='--', label='No Skill')
+plt.plot(lr_fpr2, lr_tpr2, marker='.', label='Logistic')
+# axis labels
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+# show the legend
+plt.legend()
+# show the plot
+plt.show()
