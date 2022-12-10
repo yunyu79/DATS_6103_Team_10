@@ -25,6 +25,8 @@ from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score, roc_curve
+from sklearn.metrics import mean_squared_error
+from scipy.stats import chi2_contingency
 
 from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.model_selection import cross_val_score
@@ -101,8 +103,8 @@ plt.show()
 
 # %%
 # Correlation Matrix
-plt.figure(figsize = (18, 7))
-sns.heatmap(data.corr(), annot = True, fmt = '0.2f', annot_kws = {'size' : 15}, linewidth = 5, linecolor = 'orange')
+plt.figure(figsize = (15, 8))
+sns.heatmap(data.corr(), annot = True, fmt = '0.2f', annot_kws = {'size' : 15},vmin=-1,center=0,vmax=1, linewidth = 5, linecolor = 'orange')
 plt.show()
 
 
@@ -318,6 +320,35 @@ vif_data["VIF"] = [variance_inflation_factor(vif_x.values, i)
                           for i in range(len(vif_x.columns))]
 vif_data
 
+#%%
+#Statistical Test
+
+#ANOVA
+
+
+
+#CHI-Squared tests B/W Categorical Variables
+
+#making continegncy tables 
+
+
+contigency1 = pd.crosstab(index=data['Warehouse_block'], columns=data['Reached.on.Time_Y.N'], margins=True, margins_name="Total")
+contigency2 = pd.crosstab(index=data['Mode_of_Shipment'], columns=data['Reached.on.Time_Y.N'], margins=True, margins_name="Total")
+contigency3 = pd.crosstab(index=data['Gender'], columns=data['Reached.on.Time_Y.N'], margins=True, margins_name="Total")
+contigency4 = pd.crosstab(index=data['Product_importance'], columns=data['Reached.on.Time_Y.N'], margins=True, margins_name="Total")
+
+#run functions to get the values
+
+stat1, p1, dof1, expected1 = chi2_contingency(contigency1)
+stat2, p2, dof2, expected2 = chi2_contingency(contigency2)
+stat3, p3, dof3, expected3 = chi2_contingency(contigency3)
+stat4, p4, dof4, expected4 = chi2_contingency(contigency4)
+
+#print values
+
+print("p values for Warehouse Number, Mode of Shipment, Gender, Product importance (in that order)-", p1,p2,p3,p4 )
+
+#None of them are significant
 
 #%%
 # KNN model
@@ -378,11 +409,19 @@ label_4 = label_4[['Customer_care_calls', 'Customer_rating', 'Cost_of_the_Produc
 label_4
 
 #%%
-from sklearn.neighbors import KNeighborsClassifier
+
+#Train and Test Set building
 
 X = label_4.iloc[:, :-1].values
 y = label_4.iloc[:, -1].values
+
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
+
+# X_train = np.delete(X_train, np.s_[6:18],axis=1)
+# X_test = np.delete(X_test, np.s_[6:18],axis=1)
+
+
+#%%
 
 # Feature Scaling
 sc = StandardScaler()
@@ -391,6 +430,9 @@ X_test = sc.transform(X_test)
 
 
 #%%
+
+from sklearn.neighbors import KNeighborsClassifier
+
 #ACC for KNN
 fig,ax=plt.subplots(figsize=(10,10))
 k_list=np.arange(1,11)
@@ -478,6 +520,7 @@ print('Logit model Intercept:', logitmodel.intercept_)
 y_true, y_pred = y_test, logitmodel.predict(X_test)
 print(classification_report(y_true, y_pred))
 
+
 # %%
 
 # generate a no skill prediction 
@@ -554,6 +597,7 @@ plt.ylabel('True Positive Rate')
 plt.legend()
 # show the plot
 plt.show()
+
 
 
 # %%
