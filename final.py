@@ -337,6 +337,7 @@ contigency2 = pd.crosstab(index=data['Mode_of_Shipment'], columns=data['Reached.
 contigency3 = pd.crosstab(index=data['Gender'], columns=data['Reached.on.Time_Y.N'], margins=True, margins_name="Total")
 contigency4 = pd.crosstab(index=data['Product_importance'], columns=data['Reached.on.Time_Y.N'], margins=True, margins_name="Total")
 
+
 #run functions to get the values
 
 stat1, p1, dof1, expected1 = chi2_contingency(contigency1)
@@ -358,6 +359,22 @@ print("p values for Warehouse Number, Mode of Shipment, Gender, Product importan
 # 5. cross_val_score
 # 6. mean_squared_error
 # 7. precision_recall_curve
+
+#%%
+# data split
+data.drop(columns=['Warehouse_block', 'Mode_of_Shipment', 'Product_importance', 'Gender'], inplace=True)
+X = data.iloc[:, :-1].values
+y = data.iloc[:, -1].values
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
+
+# Feature Scaling
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.transform(X_test)
+
+
+
+
 
 #%%
 # Data Preprocessing
@@ -472,7 +489,7 @@ ax.set_title('ELBOW PLOT' ,fontsize=28)
 print("We chose k-neibors = 4, since when n = 4, ACC is highest and MSE is lowest.")
 
 #%%
-classifier = KNeighborsClassifier(n_neighbors = 4, metric = 'minkowski', p = 2)
+classifier = KNeighborsClassifier(n_neighbors = 3, metric = 'minkowski', p = 2)
 classifier.fit(X_train, y_train)
 
 # Making the Confusion Matrix
@@ -597,7 +614,3 @@ plt.ylabel('True Positive Rate')
 plt.legend()
 # show the plot
 plt.show()
-
-
-
-# %%
