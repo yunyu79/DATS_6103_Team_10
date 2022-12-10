@@ -313,12 +313,10 @@ plt.show()
 
 #making continegncy tables 
 
-
 contigency1 = pd.crosstab(index=data['Warehouse_block'], columns=data['Reached.on.Time_Y.N'], margins=True, margins_name="Total")
 contigency2 = pd.crosstab(index=data['Mode_of_Shipment'], columns=data['Reached.on.Time_Y.N'], margins=True, margins_name="Total")
 contigency3 = pd.crosstab(index=data['Gender'], columns=data['Reached.on.Time_Y.N'], margins=True, margins_name="Total")
 contigency4 = pd.crosstab(index=data['Product_importance'], columns=data['Reached.on.Time_Y.N'], margins=True, margins_name="Total")
-
 
 #run functions to get the values
 
@@ -456,7 +454,7 @@ ax.set_title('ELBOW PLOT' ,fontsize=28)
 print("We chose k-neibors = 4, since when n = 4, ACC is highest and MSE is lowest.")
 
 #%%
-classifier = KNeighborsClassifier(n_neighbors = 3, metric = 'minkowski', p = 2)
+classifier = KNeighborsClassifier(n_neighbors = 4, metric = 'minkowski', p = 2)
 classifier.fit(X_train, y_train)
 
 # Making the Confusion Matrix
@@ -465,7 +463,9 @@ print(y_pred)
 print(classification_report(y_test, y_pred))
 cm = confusion_matrix(y_test, y_pred)
 print(f'The confusion matrix is {cm}')
-print(f'Test accuracy is {accuracy_score(y_test, y_pred)}')
+print(f'Train accuracy is {knn.score(X_train, y_train)}')
+print(f'Test accuracy is {knn.score(X_test, y_test)}')
+print(f'Model accuracy is {accuracy_score(y_test, y_pred)}')
 
 # Applying k-Fold Cross Validation
 accuracies = cross_val_score(estimator = classifier, X = X_train, y = y_train, cv = 10).mean()
@@ -615,6 +615,25 @@ ax.set_ylabel('ACC' ,fontsize=20)
 ax.set_title('ACC PLOT' ,fontsize=28)
 
 #%%
+#MSE for KNN
+fig,ax=plt.subplots(figsize=(10,10))
+k_list=np.arange(1,11)
+knn_mse={} # To store k and mse pairs
+for i in k_list:
+#Knn Model Creation
+    knn=KNeighborsClassifier(n_neighbors = i)
+    model_knn=knn.fit(X_train2,y_train2)
+    y_pred=model_knn.predict(X_test2)
+#Storing MSE 
+    mse=mean_squared_error(y_test2,y_pred)
+    knn_mse[i]=mse
+#Plotting the results
+ax.plot(knn_mse.keys(),knn_mse.values())
+ax.set_xlabel('K-VALUE', fontsize=20)
+ax.set_ylabel('MSE' ,fontsize=20)
+ax.set_title('ELBOW PLOT' ,fontsize=28)
+
+#%%
 classifier = KNeighborsClassifier(n_neighbors = 6, metric = 'minkowski', p = 2)
 classifier.fit(X_train2, y_train2)
 
@@ -624,10 +643,10 @@ print(y_pred2)
 print(classification_report(y_test2, y_pred2))
 cm = confusion_matrix(y_test2, y_pred2)
 print(f'The confusion matrix is {cm}')
-print(f'Test accuracy is {accuracy_score(y_test2, y_pred2)}')
+print(f'Train accuracy is {knn.score(X_train2, y_train2)}')
+print(f'Test accuracy is {knn.score(X_test2, y_test2)}')
+print(f'Model accuracy is {accuracy_score(y_test2, y_pred2)}')
 
 # Applying k-Fold Cross Validation
 accuracies = cross_val_score(estimator = classifier, X = X_train2, y = y_train2, cv = 10).mean()
 print(f'The mean accuracy is {accuracies}')
-
-# %%
