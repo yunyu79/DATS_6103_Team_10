@@ -10,31 +10,27 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import datasets, linear_model, metrics
-from sklearn.metrics import  confusion_matrix
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.metrics import accuracy_score, plot_confusion_matrix
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report
 import plotly.express as px
 from statsmodels.stats.outliers_influence import variance_inflation_factor
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, accuracy_score
+from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.metrics import mean_squared_error
 from scipy.stats import chi2_contingency
-from sklearn.metrics import confusion_matrix, accuracy_score
-from sklearn.model_selection import cross_val_score
 from statsmodels.formula.api import ols
 import statsmodels.api as sm
 
 sns.set_style("whitegrid")
 # %%
-data = pd.read_csv("C:/Users/patha/OneDrive/Desktop/MS in USA/#GWU/SEMESTER 1/DATS 6103 INTO TO DATA MINING/Git/DATS_6103_Team_10/dataset.csv")
+data = pd.read_csv("dataset.csv")
 data
 # %%
 data.info()
@@ -305,6 +301,13 @@ plt.show()
 
 #%%
 # Statistical Test
+# preparing dataset for anova
+Xvar = data.copy()
+Xvar['Gender'] = Xvar['Gender'].map({'M':0, 'F':1})
+Xvar['Mode_of_Shipment'] = Xvar['Mode_of_Shipment'].map({'Flight': 1, 'Ship':2, 'Road':3})
+Xvar['Product_importance'] = Xvar['Product_importance'].map({'high': 1, 'medium':2, 'low':3})
+Xvar['Warehouse_block'] = Xvar['Warehouse_block'].map({'A': 1, 'B':2, 'C':3, 'D':4, 'F':5})
+Xvar.rename(columns={'Reached.on.Time_Y.N': 'ReachedOnTime'}, inplace=True)
 # ANOVA
 aov_Customer_care_calls = ols('ReachedOnTime ~ Customer_care_calls', data = Xvar).fit()
 aov_Customer_care_callsT = sm.stats.anova_lm(aov_Customer_care_calls, typ=2)
@@ -513,6 +516,12 @@ print(f'The mean accuracy is {accuracies}')
 #xtrain, xtest, ytrain, ytest = train_test_split(X, Y, train_size = 0.8, random_state=1)
 
 #%%
+# correlation matrix for variables with Xvar data(diff encoding)
+plt.figure(figsize = (18, 7))
+sns.heatmap(Xvar.iloc[:,:-1].corr(), annot = True, fmt = '0.2f', annot_kws = {'size' : 15}, linewidth = 5, linecolor = 'orange')
+plt.show()
+
+#%%
 logitmodel = LogisticRegression()
 logitmodel.fit(X_train, y_train)
 print('Logit model accuracy (with the test set):', logitmodel.score(X_test, y_test))
@@ -522,8 +531,14 @@ print('Logit model Intercept:', logitmodel.intercept_)
 
 # classification report
 y_true, y_pred = y_test, logitmodel.predict(X_test)
+cmlogit1 = confusion_matrix(y_test, y_pred)
+print(cmlogit1)
 print(classification_report(y_true, y_pred))
 
+#%%
+# Applying k-Fold Cross Validation to logit1
+accuraciesLogit1 = cross_val_score(estimator = logitmodel, X = X_train, y = y_train, cv = 10).mean()
+print(f'The mean accuracy for a logistic model 1 is {accuraciesLogit1}')
 
 # %%
 
@@ -620,6 +635,9 @@ sc = StandardScaler()
 X_train2 = sc.fit_transform(X_train2)
 X_test2 = sc.transform(X_test2)
 
+
+#%%
+
 #%%
 # Improved knn
 from sklearn.neighbors import KNeighborsClassifier
@@ -687,7 +705,15 @@ print('Logit model Intercept:', logitmodel2.intercept_)
 
 # classification report
 y_true2, y_logitpred2 = y_test2, logitmodel2.predict(X_test2)
+cmlogit2 = confusion_matrix(y_test2, y_pred2)
+print(cmlogit2)
 print(classification_report(y_true2, y_logitpred2))
+
+#%%
+# Applying k-Fold Cross Validation to logit2
+accuraciesLogit2 = cross_val_score(estimator = logitmodel2, X = X_train2, y = y_train2, cv = 10).mean()
+print(f'The mean accuracy for a logistic model 2 is {accuraciesLogit2}')
+
 #%%
 # generate a no skill prediction 
 ns_probs_rf2 = [0 for _ in range(len(y_test2))]
