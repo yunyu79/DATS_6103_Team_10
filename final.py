@@ -447,9 +447,9 @@ for i in k_list:
     knn_acc[i]=acc
 #Plotting
 ax.plot(knn_acc.keys(),knn_acc.values())
-ax.set_xlabel('K-VALUE', fontsize=20)
-ax.set_ylabel('ACC' ,fontsize=20)
-ax.set_title('ACC PLOT' ,fontsize=28)
+ax.set_xlabel('k-value', fontsize=20)
+ax.set_ylabel('acc' ,fontsize=20)
+ax.set_title('ACC in KNN' ,fontsize=28)
 
 
 #%%
@@ -467,9 +467,9 @@ for i in k_list:
     knn_mse[i]=mse
 #Plotting the results
 ax.plot(knn_mse.keys(),knn_mse.values())
-ax.set_xlabel('K-VALUE', fontsize=20)
+ax.set_xlabel('k-value', fontsize=20)
 ax.set_ylabel('MSE' ,fontsize=20)
-ax.set_title('ELBOW PLOT' ,fontsize=28)
+ax.set_title('MSE in KNN' ,fontsize=28)
 
 print("We chose k-neibors = 4, since when n = 4, ACC is highest and MSE is lowest.")
 
@@ -631,9 +631,9 @@ for i in k_list:
     knn_acc2[i]=acc
 #Plotting
 ax.plot(knn_acc2.keys(),knn_acc2.values())
-ax.set_xlabel('K-VALUE', fontsize=20)
-ax.set_ylabel('ACC' ,fontsize=20)
-ax.set_title('ACC PLOT' ,fontsize=28)
+ax.set_xlabel('k-value', fontsize=20)
+ax.set_ylabel('acc' ,fontsize=20)
+ax.set_title('ACC in KNN' ,fontsize=28)
 
 #%%
 #MSE for KNN
@@ -650,9 +650,9 @@ for i in k_list:
     knn_mse[i]=mse
 #Plotting the results
 ax.plot(knn_mse.keys(),knn_mse.values())
-ax.set_xlabel('K-VALUE', fontsize=20)
+ax.set_xlabel('k-value', fontsize=20)
 ax.set_ylabel('MSE' ,fontsize=20)
-ax.set_title('ELBOW PLOT' ,fontsize=28)
+ax.set_title('MSE in KNN' ,fontsize=28)
 
 #%%
 classifier = KNeighborsClassifier(n_neighbors = 6, metric = 'minkowski', p = 2)
