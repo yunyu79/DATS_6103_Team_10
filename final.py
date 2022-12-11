@@ -564,10 +564,14 @@ print(classification_report(y_test,RandomForestPredict))
 
 # Confusion Matrix, Train,test and Model Accuracy
 nl = '\n'
+
+tn, fp, fn, tp = confusion_matrix(y_test, RandomForestPredict).ravel()
 print(f'The confusion matrix is - {nl}{confusion_matrix(y_test, RandomForestPredict)}')
 print(f'Train accuracy is {RandomForestModel.score(X_train, y_train)}')
 print(f'Test accuracy is {RandomForestModel.score(X_test, y_test)}')
 print(f'Model accuracy is {accuracy_score(y_test, RandomForestPredict)}')
+print('Specificity : ', (tn / (tn+fp)) )
+print('Sensitivity : ', (tp / (tp+fn)) )
 
 
 
@@ -723,11 +727,15 @@ print(RandomForestPredict2)
 print(classification_report(y_test2,RandomForestPredict2))
 
 ## Confusion Matrix, Train,test and Model Accuracy
-nl = '\n'
+nl='\n'
+tn, fp, fn, tp = confusion_matrix(y_test2, RandomForestPredict2).ravel()
+
 print(f'The confusion matrix is - {nl}{confusion_matrix(y_test2, RandomForestPredict2)}')
 print(f'Train accuracy is {RandomForestModel2.score(X_train2, y_train2)}')
 print(f'Test accuracy is {RandomForestModel2.score(X_test2, y_test2)}')
 print(f'Model accuracy is {accuracy_score(y_test2, RandomForestPredict2)}')
+print('Specificity : ', (tn / (tn+fp)) )
+print('Sensitivity : ', (tp / (tp+fn)) )
 
 
 # Applying k-Fold Cross Validation
@@ -762,4 +770,92 @@ plt.legend()
 # show the plot
 plt.show()
 
+#%%
+#Finding the best hyperparameters for tuning the Random Forest
+
+from sklearn.model_selection import RandomizedSearchCV
+# number of trees in random forest
+n_estimators = [int(x) for x in np.linspace(start = 200, stop = 2000, num = 10)]
+# number of features at every split
+max_features = ['auto', 'sqrt']
+
+# max depth
+max_depth = [int(x) for x in np.linspace(100, 500, num = 11)]
+max_depth.append(None)
+# create random grid
+random_grid = {
+ 'n_estimators': n_estimators,
+ 'max_features': max_features,
+ 'max_depth': max_depth
+ }
+# Random search of parameters
+rfc_randomSearch = RandomizedSearchCV(estimator = RandomForestModel2, param_distributions = random_grid, n_iter = 100, cv = 3, verbose=2, random_state=0, n_jobs = -1)
+# Fit the model
+rfc_randomSearch.fit(X_train, y_train)
+# print results
+print(rfc_randomSearch.best_params_)
+
+
+
 # %%
+
+RandomForestModel3 = RandomForestClassifier(n_estimators=200, max_depth=260, max_features='sqrt', class_weight='balanced')
+RandomForestModel3.fit(X_train2,y_train2)
+RandomForestPredict3 = RandomForestModel3.predict(X_test2)
+print(RandomForestPredict3)
+print(classification_report(y_test2,RandomForestPredict2))
+
+## Confusion Matrix, Train,test and Model Accuracy
+nl = '\n'
+
+tn, fp, fn, tp = confusion_matrix(y_test2, RandomForestPredict3).ravel()
+print(f'The confusion matrix is - {nl}{confusion_matrix(y_test2, RandomForestPredict3)}')
+print(f'Train accuracy is {RandomForestModel3.score(X_train2, y_train2)}')
+print(f'Test accuracy is {RandomForestModel3.score(X_test2, y_test2)}')
+print(f'Model accuracy is {accuracy_score(y_test2, RandomForestPredict3)}')
+print('Specificity : ', (tn / (tn+fp)) )
+print('Sensitivity : ', (tp / (tp+fn)) )
+
+
+# Applying k-Fold Cross Validation
+meanaccuraciesRf3 = cross_val_score(estimator = RandomForestModel3, X = X_train2, y = y_train2, cv = 10, scoring = 'roc_auc').mean()
+print("Mean Accuracy Score is - ", meanaccuraciesRf3)
+
+# ROC AUC Curve and Values
+
+# generate a no skill prediction 
+ns_probs_rf3 = [0 for _ in range(len(y_test2))]
+# predict probabilities
+lr_probs_rf3 = RandomForestModel3.predict_proba(X_test2)
+# keep probabilities for the positive outcome only
+lr_probs_rf3 = lr_probs_rf3[:, 1]
+# calculate scores
+ns_auc_rf3 = roc_auc_score(y_test2, ns_probs_rf3)
+lr_auc_rf3 = roc_auc_score(y_test2, lr_probs_rf3)
+# summarize scores
+print('No Skill: ROC AUC=%.3f' % (ns_auc_rf3))
+print('Logistic: ROC AUC=%.3f' % (lr_auc_rf3))
+# calculate roc curves
+ns_fpr_rf3, ns_tpr_rf3, _ = roc_curve(y_test2, ns_probs_rf3)
+lr_fpr_rf3, lr_tpr_rf3, _ = roc_curve(y_test2, lr_probs_rf3)
+# plot the roc curve for the model
+plt.plot(ns_fpr_rf3, ns_tpr_rf3, linestyle='--', label='No Skill')
+plt.plot(lr_fpr_rf3, lr_tpr_rf3, marker='.', label='Random Forest 2')
+# axis labels
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+# show the legend
+plt.legend()
+# show the plot
+plt.show()
+
+
+# %%
+#Variable Importance Plot
+
+X_train2 = pd.DataFrame(X_train2, columns = ['Customer_care_calls',	'Customer_rating',	'Cost_of_the_Product',	'Prior_purchases',	'Discount_offered', 'Weight_in_gms'])
+feature_scores = pd.Series(RandomForestModel3.feature_importances_, index = X_train2.columns).sort_values(ascending=True)
+feature_scores.plot(kind='barh')
+
+# %%
+
