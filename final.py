@@ -634,7 +634,7 @@ ns_auc_rf = roc_auc_score(y_test, ns_probs_rf)
 lr_auc_rf = roc_auc_score(y_test, lr_probs_rf)
 # summarize scores
 print('No Skill: ROC AUC=%.3f' % (ns_auc_rf))
-print('Logistic: ROC AUC=%.3f' % (lr_auc_rf))
+print('Random Forest: ROC AUC=%.3f' % (lr_auc_rf))
 # calculate roc curves
 ns_fpr_rf, ns_tpr_rf, _ = roc_curve(y_test, ns_probs_rf)
 lr_fpr_rf, lr_tpr_rf, _ = roc_curve(y_test, lr_probs_rf)
@@ -808,7 +808,7 @@ ns_auc_rf2 = roc_auc_score(y_test2, ns_probs_rf2)
 lr_auc_rf2 = roc_auc_score(y_test2, lr_probs_rf2)
 # summarize scores
 print('No Skill: ROC AUC=%.3f' % (ns_auc_rf2))
-print('Logistic: ROC AUC=%.3f' % (lr_auc_rf2))
+print('Random Forest: ROC AUC=%.3f' % (lr_auc_rf2))
 # calculate roc curves
 ns_fpr_rf2, ns_tpr_rf2, _ = roc_curve(y_test2, ns_probs_rf2)
 lr_fpr_rf2, lr_tpr_rf2, _ = roc_curve(y_test2, lr_probs_rf2)
@@ -867,7 +867,7 @@ print(f'Train accuracy is {RandomForestModel3.score(X_train2, y_train2)}')
 print(f'Test accuracy is {RandomForestModel3.score(X_test2, y_test2)}')
 print(f'Model accuracy is {accuracy_score(y_test2, RandomForestPredict3)}')
 print('Specificity : ', (tn / (tn+fp)) )
-print('Sensitivity : ', (tp / (tp+fn)) )
+print('Sensitivity : ', (tp / (fn+tp)) )
 
 
 # Applying k-Fold Cross Validation
@@ -887,7 +887,7 @@ ns_auc_rf3 = roc_auc_score(y_test2, ns_probs_rf3)
 lr_auc_rf3 = roc_auc_score(y_test2, lr_probs_rf3)
 # summarize scores
 print('No Skill: ROC AUC=%.3f' % (ns_auc_rf3))
-print('Logistic: ROC AUC=%.3f' % (lr_auc_rf3))
+print('Random Forest: ROC AUC=%.3f' % (lr_auc_rf3))
 # calculate roc curves
 ns_fpr_rf3, ns_tpr_rf3, _ = roc_curve(y_test2, ns_probs_rf3)
 lr_fpr_rf3, lr_tpr_rf3, _ = roc_curve(y_test2, lr_probs_rf3)
