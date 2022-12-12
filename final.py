@@ -270,6 +270,32 @@ sns.despine(left=True)
 plt.show()
 
 
+#%%
+#Timely delivered Statistics by Mean Weight
+
+print(data.groupby(["Reached.on.Time_Y.N"])["Weight_in_gms"].mean(), "\n")
+
+print(data.groupby(["Reached.on.Time_Y.N","Mode_of_Shipment"])["Weight_in_gms"].mean(), "\n")
+
+print(data.groupby(["Reached.on.Time_Y.N","Warehouse_block"])["Weight_in_gms"].mean(), "\n")
+
+
+#%%
+# Delivery status of Weight by warehouse block
+figure = plt.figure(figsize=(15,8))
+sns.barplot(x="Reached.on.Time_Y.N",y="Weight_in_gms",
+               data=data,color="indigo",hue="Warehouse_block", edgecolor = 'black')
+plt.title("Warehouse_block")
+plt.legend()
+plt.show()
+
+#%%
+
+# Delivery status by weight and product importance and customer rating
+figure = plt.figure(figsize=(15,8))
+sns.lineplot(x="Customer_rating",y="Weight_in_gms",hue="Reached.on.Time_Y.N",style="Product_importance", palette="flare", data=data)
+plt.show()
+
 # %% WEIGHT KDE Histogram
 sns.set_theme(style="ticks", palette="pastel")
 sns.histplot(data, x="Weight_in_gms", kde = True, hue = "Reached.on.Time_Y.N", multiple = "stack")
