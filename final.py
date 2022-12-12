@@ -297,8 +297,8 @@ sns.lineplot(x="Customer_rating",y="Weight_in_gms",hue="Reached.on.Time_Y.N",sty
 plt.show()
 
 # %% WEIGHT KDE Histogram
-sns.set_theme(style="ticks", palette="pastel")
-sns.histplot(data, x="Weight_in_gms", kde = True, hue = "Reached.on.Time_Y.N", multiple = "stack")
+sns.set_theme(style="ticks")
+sns.histplot(data, x="Weight_in_gms", kde = True, hue = "Reached.on.Time_Y.N", multiple = "stack", palette="flare")
 
 
 # %% Boxplot for weight against all vars
@@ -317,6 +317,7 @@ plt.show()
 
 
 # %%
+#Scatter Plot for cost against weight over time
 sns.scatterplot(data, x="Cost_of_the_Product", y="Weight_in_gms", hue="Reached.on.Time_Y.N", edgecolor = 'black')
 
 
