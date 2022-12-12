@@ -856,7 +856,7 @@ RandomForestModel3 = RandomForestClassifier(n_estimators=200, max_depth=260, max
 RandomForestModel3.fit(X_train2,y_train2)
 RandomForestPredict3 = RandomForestModel3.predict(X_test2)
 print(RandomForestPredict3)
-print(classification_report(y_test2,RandomForestPredict2))
+print(classification_report(y_test2,RandomForestPredict3))
 
 ## Confusion Matrix, Train,test and Model Accuracy
 nl = '\n'
@@ -893,7 +893,7 @@ ns_fpr_rf3, ns_tpr_rf3, _ = roc_curve(y_test2, ns_probs_rf3)
 lr_fpr_rf3, lr_tpr_rf3, _ = roc_curve(y_test2, lr_probs_rf3)
 # plot the roc curve for the model
 plt.plot(ns_fpr_rf3, ns_tpr_rf3, linestyle='--', label='No Skill')
-plt.plot(lr_fpr_rf3, lr_tpr_rf3, marker='.', label='Random Forest 2')
+plt.plot(lr_fpr_rf3, lr_tpr_rf3, marker='.', label='Random Forest 3')
 # axis labels
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
