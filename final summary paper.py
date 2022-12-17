@@ -337,7 +337,6 @@ sns.histplot(data, x="Weight_in_gms", kde = True, hue = "Reached.on.Time_Y.N", m
 # We find that most of the electronic products have their weight in between 1000-2000 gms and 4000-6000 gms. 
 # The heavy products have more occurences of on time delivery than lighter products as visible in the bar distribution.
 #The line of density shows that there are negligible occurences of products with weight above 6000 gms.
-#%%[markdown]
 
 
 # %% Boxplot for weight against all vars
@@ -354,16 +353,31 @@ for i in range(len(cols1)):
         nplot += 1
 plt.show()
 
+#%%[markdown]
+
+# This is a combined boxplot of all variables against weight to see the nature of the data the Inter Quartile Range and the outliers in the dataset.
+
+
 
 # %%
 #Scatter Plot for cost against weight over time
 sns.scatterplot(data, x="Cost_of_the_Product", y="Weight_in_gms", hue="Reached.on.Time_Y.N", edgecolor = 'black')
 
+#%%[markdown]
+
+# In this scatter plot we find that the products that do get delivered on time shows 2 characteristics, 
+# first is that they have higher weight than products not getting delivered on time and secondly 
+# they have a more products with higher price.
 
 # %%# customer rating 
 sns.histplot(data, x = "Customer_rating", hue = "Reached.on.Time_Y.N", multiple = "dodge", bins=10)
 plt.title("Histogram for Customer Rating")
 plt.show()
+
+#%%[markdown]
+
+# In this histogram we find that the products that do not get delivered on time have more counts of them being rated by the customers.
+
 
 #%%
 # Statistical Test
