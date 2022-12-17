@@ -269,16 +269,36 @@ sns.boxplot(x="Customer_care_calls", y="Discount_offered", hue="Reached.on.Time_
 sns.despine(left=True)
 plt.show()
 
+#%%[markdown]
+
+# Further statistics below tell us the story of data from the perspective of weight.
+# Weight is an important variable in determining the timely delivery of the product.
+#In the dataset, the weight is present in the unit of grams. We will first go through the descriptive
+#statistics, then we move on to "relevant" plots for the weight variable.
+#We will now look at weight and how it related to other variables.
 
 #%%
 #Timely delivered Statistics by Mean Weight
 
 print(data.groupby(["Reached.on.Time_Y.N"])["Weight_in_gms"].mean(), "\n")
 
-print(data.groupby(["Reached.on.Time_Y.N","Mode_of_Shipment"])["Weight_in_gms"].mean(), "\n")
-
 print(data.groupby(["Reached.on.Time_Y.N","Warehouse_block"])["Weight_in_gms"].mean(), "\n")
 
+print(data.groupby(["Reached.on.Time_Y.N","Mode_of_Shipment"])["Weight_in_gms"].mean(), "\n")
+
+
+#%%[markdown]
+
+# Here we find that mean weight ranges on the both sides of 3000 gms and 4000 gms.
+#It is on the higher side of the 4000 gms mark for products that were delivered on time and similarly on the higher side of the 3000 gms mark
+# for products that were not delivered on time but not too far away from those marks when we group the data by 
+# electronics getting reached on time.
+
+#
+
+#The same trend is visible when we find the mean weight, grouping by the warehouse blocks which are - Warehouse A, Warehouse B, 
+# Warehouse C, Warehouse D, Warehouse F and Reached on time factor and then again grouping by reached on time factor 
+# and mode of shipment which are Flight Road and Shipment.
 
 #%%
 # Delivery status of Weight by warehouse block
@@ -289,16 +309,35 @@ plt.title("Warehouse_block")
 plt.legend()
 plt.show()
 
+#%%[markdown]
+
+# Here we are able to reaffirm our theory from previous agreegation of data using group by function.
+# Each warehouse has same range of weights in them for a each of the two delivery metric that means for products getting delivered 
+# on time, we have a similar category of weights and for the products not getting delivered on time, we also have a similar catagory of weights.
 #%%
 
 # Delivery status by weight and product importance and customer rating
 figure = plt.figure(figsize=(15,8))
 sns.lineplot(x="Customer_rating",y="Weight_in_gms",hue="Reached.on.Time_Y.N",style="Product_importance", palette="flare", data=data)
 plt.show()
+#%%[markdown]
+
+# Here we display relationship between multiple variables by plotting Weight against Customer rating with product importance and timely delivery in legend.
+# We find that weight of products with low importance are lesser compared to those which are of medium importance which is again lesser to the ones with high importance.
+# While the customer rating moves in a very similar fashion like other variables against weight(as mentioned above), It does how ever shows that for products with higher weight and the ones that get delivered on time
+# rating does not cross 4/5 mark. The rating usually increases with decrease in weight for products getting delivered on time, irrespective of the importance.
 
 # %% WEIGHT KDE Histogram
 sns.set_theme(style="ticks")
 sns.histplot(data, x="Weight_in_gms", kde = True, hue = "Reached.on.Time_Y.N", multiple = "stack", palette="flare")
+#%%[markdown]
+
+# The Kernel density histogram's purpose here is to tell us the distibution of the observations in the dataset. It is an evolution of the histogram where weare able to portray variable density and the count of values in each of those bins.
+# In our case, the bins are made of the weight in grams on x axis and y axis represents the count of those values of weights.
+# We find that most of the electronic products have their weight in between 1000-2000 gms and 4000-6000 gms. 
+# The heavy products have more occurences of on time delivery than lighter products as visible in the bar distribution.
+#The line of density shows that there are negligible occurences of products with weight above 6000 gms.
+#%%[markdown]
 
 
 # %% Boxplot for weight against all vars
@@ -380,16 +419,6 @@ stat4, p4, dof4, expected4 = chi2_contingency(contigency4)
 print("p values for Warehouse Number, Mode of Shipment, Gender, Product importance (in that order)-", p1,p2,p3,p4 )
 
 #None of them are significant
-
-#%%
-# KNN model
-# 2. confusion matrix
-# 3. accuracy score
-# 4. classification report
-# 5. cross_val_score
-# 6. mean_squared_error
-# 7. precision_recall_curve
-
 
 #%%
 # Data Preprocessing
