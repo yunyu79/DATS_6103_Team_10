@@ -225,6 +225,8 @@ fig = px.pie(reached_on_time_y_n, names = 'Reached.on.Time_Y.N', values = 'value
              color_discrete_sequence = px.colors.sequential.Darkmint_r, width = 650, height = 400)
 fig.update_traces(textinfo = 'percent+label')
 
+#%%[markdown]
+# From this pie-chart, we can know the ratio of "Discount_offered".
 
 # %%
 # distribution plot about "Discount_offered"
@@ -232,6 +234,8 @@ plt.figure(figsize = (15, 7))
 ax = sns.distplot(data['Discount_offered'], color = 'r')
 plt.show()
 
+#%%[markdown]
+# From this graph, we can see how many discounts offered. We can know most products’ discount is within [0,10].
 
 #%%
 # Categorical columns with Discount_offered
@@ -247,22 +251,26 @@ for i in range(len(cols_cate_disc)):
         nplot += 1
 plt.show()
 
-
+#%%[markdown]
+# For the left graph, within Warehouse_block categorical variable, from horizontal view, we can know there is no much difference among warehouse D-F and C for discount. Also, it is the same for mode of shipment among Flight, Ship and Road.
+#
+# Also, whether Product_importance is low, medium or high, it doesn’t have much influence on discount. Gender is the same. No matter female or male, this variable doesn’t have much impact on Discount_offered. 
 # %%
 px.box(data, x = 'Reached.on.Time_Y.N', y = 'Discount_offered',color = 'Reached.on.Time_Y.N')
 
+#%% [markdown]
+# This is a boxplot for "Discount_offered" relative to "Reached.on.Time_Y.N". We can know there are less discounts offered when products are delivered on time from this graph.
 
-# %%
-plt.figure(figsize = (11, 7))
-ax = sns.boxplot(x="Product_importance", y="Discount_offered", hue="Reached.on.Time_Y.N", palette={0: "y", 1: "b"}, data=data).set(title = "Do product_importance and discount affect delivery?")
-plt.show()
-
-
-# %%
+#%%
 # violinplot about discount + prior + reach or not
 sns.violinplot(x="Prior_purchases", y="Discount_offered", hue="Reached.on.Time_Y.N", split=True, inner="quart",palette={0: "y", 1: "b"}, data=data).set(title = "Do prior_purchases and discount affect delivery?")
 sns.despine(left=True)
 plt.show()
+
+#%% [markdown]
+# Discount range is larger when Prior_purchases are more. 
+# 
+# What is the relationship between discount and product importance? More purchases made before, more discounts are given, which matches our common sense too. Therefore, discount range is larger, if more Prior_purchases made.
 
 
 # %%
@@ -273,12 +281,20 @@ plt.show()
 ax = sns.scatterplot(x='Discount_offered', y='Cost_of_the_Product', data=data, hue='Reached.on.Time_Y.N')
 plt.show()
 
+#%%[markdown]
+# Let’s continue to look at relationship between weight and discount. We can see when reach on time = 0, discount and weight distribution is smaller, it is almost on the left side of the graph.
 
 # %%
 plt.figure(figsize = (15, 7))
 sns.boxplot(x="Customer_care_calls", y="Discount_offered", hue="Reached.on.Time_Y.N", palette={0: "y", 1: "b"}, data=data).set(title = "Do calls and discount affect delivery?")
 sns.despine(left=True)
 plt.show()
+
+#%% [markdown]
+# Next, we analyzed discount with numeric variables. 
+# 
+# This is a boxplot about discount relative with Customer_care_calls. More customers called, less product discount offered. It is same as our common sense, higher price of products, more care is from customers. 
+
 
 #%%[markdown]
 
@@ -467,6 +483,14 @@ print("p values for Warehouse Number, Mode of Shipment, Gender, Product importan
 #
 # For all **categorical variables**, such as warehouse block, mode of shipment, gender, and importance of products they **do not affect** the on-time delivery.  
 
+#%%[markdown]
+### Data preprocessing.
+# • Using one hot encoding to treat all categorical variables, converting from string to 0/1.
+# 
+# •	Scaling all numeric variables from 0 to 1.
+# 
+# •	Splitting train and test datasets
+
 #%%
 # Data Preprocessing
 # Dealing with Warehouse_block
@@ -475,7 +499,6 @@ data_copy = data.copy()
 label_1 = pd.get_dummies(data_copy,prefix = n ,columns=[n],drop_first=False)
 label_1.insert(loc=1, column=n, value=data[n].values)
 label_1.drop([n],axis = 1,inplace = True)
-label_1
 
 
 #%%
@@ -485,7 +508,6 @@ data_copy = data.copy()
 label_2 = pd.get_dummies(label_1,prefix = n ,columns=[n],drop_first=False)
 label_2.insert(loc=1, column=n, value=data[n].values)
 label_2.drop([n],axis = 1,inplace = True)
-label_2
 
 #%%
 # Dealing with Mode_of_Shipment
@@ -494,7 +516,6 @@ data_copy = data.copy()
 label_3 = pd.get_dummies(label_2,prefix = n ,columns=[n],drop_first=False)
 label_3.insert(loc=5, column=n, value=data[n].values)
 label_3.drop([n],axis = 1,inplace = True)
-label_3
 
 #%%
 # Dealing with Gender
@@ -504,6 +525,9 @@ label_4 = pd.get_dummies(label_3,prefix = n ,columns=[n],drop_first=False)
 label_4.insert(loc=5, column=n, value=data[n].values)
 label_4.drop([n],axis = 1,inplace = True)
 label_4
+
+#%%[markdown]
+# All categorical variables are converted to numeric.
 
 #%%
 label_4 = label_4[['Customer_care_calls', 'Customer_rating', 'Cost_of_the_Product',
@@ -516,8 +540,10 @@ label_4 = label_4[['Customer_care_calls', 'Customer_rating', 'Cost_of_the_Produc
        'Gender_M','Reached.on.Time_Y.N',]]
 label_4
 
-#%%
+#%%[markdown]
+# Changed column names.
 
+#%%
 #Train and Test Set building
 
 X = label_4.iloc[:, :-1].values
@@ -530,15 +556,14 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 
 
 #%%
-
 # Feature Scaling
 sc = StandardScaler()
 X_train = sc.fit_transform(X_train)
 X_test = sc.transform(X_test)
 
-
+#%%[markdown]
+### KNN Model
 #%%
-
 from sklearn.neighbors import KNeighborsClassifier
 
 #ACC for KNN
@@ -557,9 +582,17 @@ ax.set_xlabel('k-value', fontsize=20)
 ax.set_ylabel('acc' ,fontsize=20)
 ax.set_title('ACC in KNN' ,fontsize=28)
 
+#%%[markdown]
+# •	When k = [1,10], KNN accuracies are shown above
+# 
+# •	When k = 1, this model overfitting, so even though the accuracy of KNN is higher, we don’t choose this k-value.
+# 
+# •	When k = 4, accuracy reaches highest.
+# 
+# Thus, we chose k = 4, because its accuracy reaches highest.
 
 #%%
-#MSE for KNN
+## MSE for KNN
 fig,ax=plt.subplots(figsize=(10,10))
 k_list=np.arange(1,11)
 knn_mse={} # To store k and mse pairs
@@ -579,6 +612,13 @@ ax.set_title('MSE in KNN' ,fontsize=28)
 
 print("We chose k-neibors = 4, since when n = 4, ACC is highest and MSE is lowest.")
 
+#%%[markdown]
+# •	When k = [1,10], MSE of KNN are shown below.
+# 
+# •	When k = 4, MSE reaches lowest, which is less than 0.37.
+# 
+# Conclusion: We chose k =4 as KNN model’s best input parameter.
+
 #%%
 classifier = KNeighborsClassifier(n_neighbors = 4, metric = 'minkowski', p = 2)
 classifier.fit(X_train, y_train)
@@ -597,6 +637,10 @@ print(f'Model accuracy is {accuracy_score(y_test, y_pred)}')
 accuracies = cross_val_score(estimator = classifier, X = X_train, y = y_train, cv = 10).mean()
 print(f'The mean accuracy is {accuracies}')
 
+#%%[markdown]
+# When k = 4, the accuracy, confusion matrix, precision and recall values’ table of KNN are shown above.
+# 
+#### Conclusion: When k = 4, KNN model reaches highest accuracy, 0.63, with MSE less than 0.37.
 #%%[markdown]
 ### Logistic Regression 
 #%%
@@ -720,8 +764,9 @@ plt.show()
 #Moving on, we can see the mean model accuracy also at 65.98 percent for the overall prediction which is above average at best but not the very accurate for this problem.
 #The Receiver Operating Characteristic curve is also plotted for the model and we can see that the area under the curve is 0.736 which is also not the greatest but not the worst either for a model that is using all the variables as features to predict the occurrence of an event mentioned above time and again.
  
-
-
+#%%[markdown]
+### Built models again after dropping categorical variables
+# Dropping categorical variables to improve accuracy
 #%%
 # data split
 data2 = data.copy()
@@ -735,9 +780,9 @@ sc = StandardScaler()
 X_train2 = sc.fit_transform(X_train2)
 X_test2 = sc.transform(X_test2)
 
-
-#%%
-
+#%%[markdown]
+## Improved KNN model
+# According to the ANOVA and kai-square test we did before, we built KNN model again.
 #%%
 # Improved knn
 from sklearn.neighbors import KNeighborsClassifier
@@ -756,6 +801,13 @@ ax.plot(knn_acc2.keys(),knn_acc2.values())
 ax.set_xlabel('k-value', fontsize=20)
 ax.set_ylabel('acc' ,fontsize=20)
 ax.set_title('ACC in KNN' ,fontsize=28)
+
+#%%[markdown]
+# •	When k = [1,10], KNN accuracies are shown above.
+# 
+# •	When k = 6 and 8, accuracies of KNN are really closed. Thus, we don’t know we should choose 6 or 8 value.
+# 
+# Then we also evaluate their MSE value.
 
 #%%
 #MSE for KNN
@@ -776,6 +828,14 @@ ax.set_xlabel('k-value', fontsize=20)
 ax.set_ylabel('MSE' ,fontsize=20)
 ax.set_title('MSE in KNN' ,fontsize=28)
 
+#%%[markdown]
+# •	When k = [1,10], MSE of KNN are shown below.
+# 
+# •	When k = 6 and 8, MSE are also similar.
+# 
+# Thus, we decide to find out average cross validation accuracy of these two K values to decide which k we should choose.
+# 
+# Therefore, we compare mean cross validation accuracy between k = 6 and 8.
 #%%
 classifier = KNeighborsClassifier(n_neighbors = 6, metric = 'minkowski', p = 2)
 classifier.fit(X_train2, y_train2)
@@ -794,6 +854,18 @@ print(f'Model accuracy is {accuracy_score(y_test2, y_pred2)}')
 accuracies = cross_val_score(estimator = classifier, X = X_train2, y = y_train2, cv = 10).mean()
 print(f'The mean accuracy is {accuracies}')
 
+#%%
+classifier = KNeighborsClassifier(n_neighbors = 8, metric = 'minkowski', p = 2)
+classifier.fit(X_train2, y_train2)
+y_pred2 = classifier.predict(X_test2)
+print(y_pred2)
+accuracies = cross_val_score(estimator = classifier, X = X_train2, y = y_train2, cv = 10).mean()
+print(f'The mean accuracy is {accuracies}')
+
+#%%[markdown]
+# When k = 8, the mean accuracy is higher than k = 6, so we chose k = 8.
+#
+#### Conclusion: KNN model highest accuracy is 0.66 with low MSE is 0.341.
 # %%
 # Logitmodel with the second data
 logitmodel2 = LogisticRegression()
