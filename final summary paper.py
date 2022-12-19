@@ -29,20 +29,50 @@ from statsmodels.formula.api import ols
 import statsmodels.api as sm
 
 sns.set_style("whitegrid")
+#%% [markdown]
+## Introduction
+#
+# The Black Friday 2022 witnessed consumers spend a record $9.12 billion online, according to Adobe, which monitors sales on retailer websites. It is obvious that E-Commerce is one of the biggest and competitive industries in the world right now. Then how can one E-Commerce have competitive advantage over others?   
+#  
+# According to the survey regarding E-Commerce delivery, 66% of shoppers decided to buy products from one retailer over other because of the delivery services. The delivery service is playing a crucial role when it comes to the online shopping. Now online retailers are providing an estimated delivery date to customers since 83% of them anticipate a guaranteed arrival date. Even when the package is delayed, customers want the retailer to inform them about the delay and new estimated delivery date. The estimated delivery date and being delivered on-time are directly related to positive experiences from customers.   
+#  
+# Based on this, the goal of our project is to **predict the on-time delivery** with data from E-Commerce company. We expect our analysis have valuable business insights regarding delivery services to increase the customer satisfaction for E-Commerce retailers.   
+#
+# We have two **SMART questions** here. 
+# 1. What features affect on-time delivery of products?
+# 2. How can we predict on-time delivery with the higher accuracy for the E-Commerce company?
+#
+# This summary paper is organized as follows:   
+# 1. Introduction 
+# 2. Description of Data 
+# 3. EDA 
+# 4. Models 
+# 5. Conclusion
 # %%
 data = pd.read_csv("dataset.csv")
 data
+#%% [markdown]
+# We imported dataset as 'data'. The dataset is provided by E-commerce company who sells electronic products.
+# The dataset contained 10999 observations of 12 variables.
 # %%
 data.info()
 data.isna().sum() / len(data)
+#%% [markdown]
+# There are no N/A values.
+
 # %%
 # drop column that we are not using
 data.drop(columns=['ID'], inplace=True)
 data.info()
+#%%[markdown]
+# We dropped the ID column as it was irrelevant. 
 
 # %%
 # differences between on-time and delayed delivery
 data.groupby("Reached.on.Time_Y.N").describe().T
+#%%[markdown]
+# We tried to see the differences on data by the on-time delivery.
+# There are statistical differences in some variables by on-time delivery, including discount and weight. We will identify if this differences are statistically significant by visualization and hypothesis testings to answer the first SMART question which is "What features affect on-time delivery of products?". 
 # %%
 # boxplots for On-time delivery
 integer_cols = data.select_dtypes(include = ['int64'])
@@ -60,9 +90,19 @@ for i in range(len(intcols21)):
         nplot += 1
 plt.show()
 
+# %%[markdown]
+# From boxplots here, we can see the distribution of On-time delivery by each numberical variables. 
+
 #%%
 # Pairplots for integer columns (Initial EDA)
 sns.pairplot(data = integer_cols, hue = "Reached.on.Time_Y.N")
+#%%[markdown]
+# From the pairplot here, we can see the relationships between variables at once. We will continue our exploratory data analysis.
+#%%
+# countplot for reached on time
+sns.countplot(x ="Reached.on.Time_Y.N", data = data)
+plt.title("Reached.on.Time_Y.N Counts")
+
 # %%
 # counts plots for every column
 cols = ['Warehouse_block', 'Mode_of_Shipment', 'Customer_care_calls', 'Customer_rating', 'Prior_purchases', 'Product_importance', 'Gender']
@@ -77,11 +117,8 @@ for i in range(len(cols)):
         nplot += 1
 plt.show()
 
-
-#%%
-# countplot for reached on time
-sns.countplot(x ="Reached.on.Time_Y.N", data = data)
-plt.title("Reached.on.Time_Y.N Counts")
+#%%[markdown]
+# From the first countplot, we can see there more packages that are delayed than reached on time. We also visualized count plots for each variables but separated by on-time delivery. We can see distributions for each variables here. The delayed packages are more than delivered on-time for every variables which makes sense with the previous countplot. 
 
 #%%
 # boxplots for On-time delivery 
@@ -96,7 +133,8 @@ for i in range(len(intcols21)):
         plt.title("Boxplots for On-time delivery by "f"{intcols21[i]}" , fontsize = 13)
         nplot += 1
 plt.show()
-
+#%%[markdown]
+# From boxplots separated by on-time delivery, there are not huge differences between each component for every variables except for Discount and Weight. The packages that reached on time tend to have less discount amount and heavier than the packages that not delivered on time.
 
 # %%
 # Correlation Matrix
@@ -104,6 +142,8 @@ plt.figure(figsize = (15, 8))
 sns.heatmap(data.corr(), annot = True, fmt = '0.2f', annot_kws = {'size' : 15},vmin=-1,center=0,vmax=1, linewidth = 5, linecolor = 'orange')
 plt.show()
 
+#%%[markdown]
+# Based on the correlation matrix here, we decided to look into offered discount, weight, cost, and customer care calls.
 
 # %%
 # Histogram for Cost
@@ -111,6 +151,8 @@ sns.histplot(data, x = "Cost_of_the_Product", hue = "Reached.on.Time_Y.N", multi
 plt.title("Histogram for Cost of the Product")
 plt.show()
 
+#%%[markdown]
+# The histogram for cost which is stacked by on-time delivery has a bimodal distribution. For the products with lower cost, they tend to be not delivered on-time.
 
 # %%
 # Boxplots for Object columns and Cost 
@@ -129,7 +171,8 @@ for i in range(len(obcol)):
         nplot += 1
 plt.show()
 # for boxplots there were no significant differences between x variables but there are differences by whether the product was reached on time
-
+#%%[markdown]
+# The boxplots between categorical variables with cost do not show much differences whether the order has been delivered on time or not. The cost of the products that delivered on time are slightly higher for every categorical variable.
 
 # %%
 # violins for customer calls and ratings 
@@ -146,49 +189,16 @@ for i in range(len(intcols22)):
         nplot += 1
 plt.show()
 # the more customers call, the higher its cost
-
+#%%[markdown]
+# There are more customer calls when the cost of the product is higher which is reasonable, but there are no big differences between customer rating and cost of products.
 
 #%%
 # KDE plot for cost and weight
 sns.displot(data=data, x="Cost_of_the_Product", y="Weight_in_gms", hue="Reached.on.Time_Y.N", kind = "kde", multiple="fill", clip=(0, None))
 plt.title("KDE plot for Cost of the product by Weight")
 plt.show()
-
-
-# %%
-# violins for customer calls 
-plt.figure(figsize = (16, 20))
-sns.set_theme(style="ticks", palette="pastel")
-nplot = 1
-for i in range(len(intcols22)):
-    if nplot <= len(intcols22):
-        ax = plt.subplot(4, 2, nplot)
-        sns.violinplot(x = intcols22[i], y= "Cost_of_the_Product", hue = "Reached.on.Time_Y.N", data = data, ax = ax, split = True)
-        plt.title("Violinplots for Cost of the Product by "f"{intcols22[i]}" , fontsize = 13)
-        nplot += 1
-plt.show()
-
-
-# %%
-# Histogram for Customer Calls
-sns.histplot(data, x = "Customer_care_calls", hue = "Reached.on.Time_Y.N", multiple = "dodge", bins=10)
-plt.title("Histogram for Customer Calls")
-plt.show()
-
-
-# %%
-# Violinplots for Customer Calls by Ontime
-plt.figure(figsize = (16, 20))
-sns.set_theme(style="ticks", palette="pastel")
-nplot = 1
-for i in range(len(obcol)):
-    if nplot <= len(obcol):
-        ax = plt.subplot(4, 2, nplot)
-        sns.violinplot(x = obcol[i], y= "Customer_care_calls", hue = "Reached.on.Time_Y.N", data = data, ax = ax, split = True)
-        plt.title("Violinplots for Customer Calls by "f"{obcol[i]}" , fontsize = 13)
-        nplot += 1
-plt.show()
-
+#%%[markdown]
+# For the lower cost and lighter products, they tend to be not delivered on time based on this plot. And for on-time delivered packages are usually heavy or expensive when they are light weighted.
 
 # %%
 intcols3 = intcols.drop(["Customer_care_calls", "Reached.on.Time_Y.N"])
@@ -203,7 +213,8 @@ for i in range(len(intcols3)):
         nplot += 1
 plt.show()
 # boxenplots also works
-
+#%%[markdown]
+# From the boxplots here, we can see the distribution of customer care calls data by each variable that separated by on time delivery. We still can see the differences in Discount and Weight.
 
 # %%
 integer_columns = data.select_dtypes(include = ['int64'])
@@ -412,7 +423,12 @@ print(aov_Discount_offeredT)
 aov_Weight_in_gms = ols('ReachedOnTime ~ Weight_in_gms', data = Xvar).fit()
 aov_Weight_in_gmst = sm.stats.anova_lm(aov_Weight_in_gms, typ=2)
 print(aov_Weight_in_gmst)
-
+#%%[markdown]
+# We decided to perform ANOVA tests on numerical variables to identify they have some relationship with on-time delivery. 
+# H0: The means of numerical variables are same whether the order is delivered on time or not.
+# H1: The means of numerical variables are NOT same whether the order is delivered on time or not.
+# P-values from ANOVA tests with all the numerical variables except for Customer rating are small enough to reject the null hypothesis.
+# Thus, Numerical variables except for Customer rating and on-time delivery are statistically related.
 
 #CHI-Squared tests B/W Categorical Variables
 
@@ -435,13 +451,21 @@ stat4, p4, dof4, expected4 = chi2_contingency(contigency4)
 print("p values for Warehouse Number, Mode of Shipment, Gender, Product importance (in that order)-", p1,p2,p3,p4 )
 
 #%%[markdown]
-
 # We then performed a statistical tests as shown above where we analyze the relationship between 2 categorical variables.
 # We find that the p value for all the variables is much higher than 0.05 which means that we fail to reject the null hypothesis and 
 # we can say that there is no significant relationship between the variables.
 # We can also say that the variables are independent of each other and they cannot be used to predict the outcome variable's condition. 
 # in our case the condition would be whether a product gets delivered on time or not.
 # By that, we can conclude that the variables - Mode of Shipment, Product Importance, Warehouse Block, Customer Rating are not to be used for the model building and prediction.
+
+#%%[markdown]
+# From all the EDA and statistical testings, we can answer the first SMART question.  
+#
+# **Q. What features affect on-time delivery of products?**   
+#
+# The **numerical variables** including customer care calls, weight/cost of products, offered discounts, and prior purchases **affect** the on-time delivery, whereas **customer rating does not**.   
+#
+# For all **categorical variables**, such as warehouse block, mode of shipment, gender, and importance of products they **do not affect** the on-time delivery.  
 
 #%%
 # Data Preprocessing
@@ -573,33 +597,15 @@ print(f'Model accuracy is {accuracy_score(y_test, y_pred)}')
 accuracies = cross_val_score(estimator = classifier, X = X_train, y = y_train, cv = 10).mean()
 print(f'The mean accuracy is {accuracies}')
 
-
-#%%
-# Logistic Regression 
-
-# encoding
-# data['Gender'] = data['Gender'].map({'M':0, 'F':1})
-# data['Mode_of_Shipment'] = data['Mode_of_Shipment'].map({'Flight': 1, 'Ship':2, 'Road':3})
-# data['Product_importance'] = data['Product_importance'].map({'high': 1, 'medium':2, 'low':3})
-# data['Warehouse_block'] = data['Warehouse_block'].map({'A': 1, 'B':2, 'C':3, 'D':4, 'F':5})
-
-#%%
-## split data
-# X = data.drop("Reached.on.Time_Y.N", axis = 1)
-# Y = data["Reached.on.Time_Y.N"]
-# xtrain, xtest, ytrain, ytest = train_test_split(X, Y, train_size = 0.8, random_state=1)
-
-#%%
-# X = label_4.drop("Reached.on.Time_Y.N", axis = 1)
-# Y = label_4["Reached.on.Time_Y.N"]
-#xtrain, xtest, ytrain, ytest = train_test_split(X, Y, train_size = 0.8, random_state=1)
-
+#%%[markdown]
+### Logistic Regression 
 #%%
 # correlation matrix for variables with Xvar data(diff encoding)
 plt.figure(figsize = (18, 7))
 sns.heatmap(Xvar.iloc[:,:-1].corr(), annot = True, fmt = '0.2f', annot_kws = {'size' : 15}, linewidth = 5, linecolor = 'orange')
 plt.show()
-
+#%%[markdown]
+# We checked the correlations between variables. And it showed that no two variables have the high correlation. So first, we decided to keep all the variables for the logistic regression model. 
 #%%
 logitmodel = LogisticRegression()
 logitmodel.fit(X_train, y_train)
@@ -613,7 +619,8 @@ y_true, y_pred = y_test, logitmodel.predict(X_test)
 cmlogit1 = confusion_matrix(y_test, y_pred)
 print(cmlogit1)
 print(classification_report(y_true, y_pred))
-
+#%%[markdown]
+# We built a logistic regression with all variables first. The model accuracy with the test set is 0.63, and with the train set is 0.64. Also we checked the confusion matrix and classification report.
 #%%
 # Applying k-Fold Cross Validation to logit1
 accuraciesLogit1 = cross_val_score(estimator = logitmodel, X = X_train, y = y_train, cv = 10).mean()
@@ -646,7 +653,9 @@ plt.ylabel('True Positive Rate')
 plt.legend()
 # show the plot
 plt.show()
-
+#%%[markdown]
+# After the k-Fold Cross Validation, the mean accuracy for this logistic model is 0.64030044472024.
+# THe ROC AUC score for this model is 0.718.
 #%%
 # Random forest
 
@@ -831,6 +840,8 @@ plt.ylabel('True Positive Rate')
 plt.legend()
 # show the plot
 plt.show()
+#%%[markdown]
+# We also tried o build the second logistic regression only with selected features. The accuracy with the test set has been improved by around 0.005 with selected features. However, after the k-Fold Cross Validation, the mean accuracy is 0.6383694022132589. Also the AUC ROC score is 0.716, which is lower than the first one. Thus we can conclude that with the mean accuracy and AUC ROC score, the first model is better between two Logistic Regression models. The logistic regression model with all features has 64% accuracy with AUC ROC score of 0.718.
 
 
 #%%
@@ -1002,11 +1013,12 @@ feature_scores = pd.Series(RandomForestModel3.feature_importances_, index = X_tr
 feature_scores.plot(kind='barh')
 
 # %% [markdown]
-#We also plotted the variable importance plot to see which variables are the most important for the model to predict the target variable and it is clear that 
+# We also plotted the variable importance plot to see which variables are the most important for the model to predict the target variable and it is clear that 
 # the weight is the most  important variable followed by the discount offered and the cost of product other than that the lesser important variables are the 
 # customer rating, prior purchases and the customer care calls.
 #
-# Conclusion
+## Conclusion  
+
 # While our EDA shows that numeric variables are equally important in figuring out the trends and patterns in data, 
 # we can see that the model is able to best predict the target variable using the Random Forest model with hyperparameter tuning 
 # and numerical features(subset of the all the features). The Random Forest Model has the highest mean prediction accuracy of 73.75% 
@@ -1016,6 +1028,3 @@ feature_scores.plot(kind='barh')
 # References - 
 #
 # https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RandomizedSearchCV.html
-
-
-# %%
