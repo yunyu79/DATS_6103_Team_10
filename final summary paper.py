@@ -280,16 +280,36 @@ sns.boxplot(x="Customer_care_calls", y="Discount_offered", hue="Reached.on.Time_
 sns.despine(left=True)
 plt.show()
 
+#%%[markdown]
+
+# Further statistics below tell us the story of data from the perspective of weight.
+# Weight is an important variable in determining the timely delivery of the product.
+#In the dataset, the weight is present in the unit of grams. We will first go through the descriptive
+#statistics, then we move on to "relevant" plots for the weight variable.
+#We will now look at weight and how it related to other variables.
 
 #%%
 #Timely delivered Statistics by Mean Weight
 
 print(data.groupby(["Reached.on.Time_Y.N"])["Weight_in_gms"].mean(), "\n")
 
-print(data.groupby(["Reached.on.Time_Y.N","Mode_of_Shipment"])["Weight_in_gms"].mean(), "\n")
-
 print(data.groupby(["Reached.on.Time_Y.N","Warehouse_block"])["Weight_in_gms"].mean(), "\n")
 
+print(data.groupby(["Reached.on.Time_Y.N","Mode_of_Shipment"])["Weight_in_gms"].mean(), "\n")
+
+
+#%%[markdown]
+
+# Here we find that mean weight ranges on the both sides of 3000 gms and 4000 gms.
+#It is on the higher side of the 4000 gms mark for products that were delivered on time and similarly on the higher side of the 3000 gms mark
+# for products that were not delivered on time but not too far away from those marks when we group the data by 
+# electronics getting reached on time.
+
+#
+
+#The same trend is visible when we find the mean weight, grouping by the warehouse blocks which are - Warehouse A, Warehouse B, 
+# Warehouse C, Warehouse D, Warehouse F and Reached on time factor and then again grouping by reached on time factor 
+# and mode of shipment which are Flight Road and Shipment.
 
 #%%
 # Delivery status of Weight by warehouse block
@@ -300,16 +320,34 @@ plt.title("Warehouse_block")
 plt.legend()
 plt.show()
 
+#%%[markdown]
+
+# Here we are able to reaffirm our theory from previous agreegation of data using group by function.
+# Each warehouse has same range of weights in them for a each of the two delivery metric that means for products getting delivered 
+# on time, we have a similar category of weights and for the products not getting delivered on time, we also have a similar catagory of weights.
 #%%
 
 # Delivery status by weight and product importance and customer rating
 figure = plt.figure(figsize=(15,8))
 sns.lineplot(x="Customer_rating",y="Weight_in_gms",hue="Reached.on.Time_Y.N",style="Product_importance", palette="flare", data=data)
 plt.show()
+#%%[markdown]
+
+# Here we display relationship between multiple variables by plotting Weight against Customer rating with product importance and timely delivery in legend.
+# We find that weight of products with low importance are lesser compared to those which are of medium importance which is again lesser to the ones with high importance.
+# While the customer rating moves in a very similar fashion like other variables against weight(as mentioned above), It does how ever shows that for products with higher weight and the ones that get delivered on time
+# rating does not cross 4/5 mark. The rating usually increases with decrease in weight for products getting delivered on time, irrespective of the importance.
 
 # %% WEIGHT KDE Histogram
 sns.set_theme(style="ticks")
 sns.histplot(data, x="Weight_in_gms", kde = True, hue = "Reached.on.Time_Y.N", multiple = "stack", palette="flare")
+#%%[markdown]
+
+# The Kernel density histogram's purpose here is to tell us the distibution of the observations in the dataset. It is an evolution of the histogram where weare able to portray variable density and the count of values in each of those bins.
+# In our case, the bins are made of the weight in grams on x axis and y axis represents the count of those values of weights.
+# We find that most of the electronic products have their weight in between 1000-2000 gms and 4000-6000 gms. 
+# The heavy products have more occurences of on time delivery than lighter products as visible in the bar distribution.
+#The line of density shows that there are negligible occurences of products with weight above 6000 gms.
 
 
 # %% Boxplot for weight against all vars
@@ -326,16 +364,31 @@ for i in range(len(cols1)):
         nplot += 1
 plt.show()
 
+#%%[markdown]
+
+# This is a combined boxplot of all variables against weight to see the nature of the data the Inter Quartile Range and the outliers in the dataset.
+
+
 
 # %%
 #Scatter Plot for cost against weight over time
 sns.scatterplot(data, x="Cost_of_the_Product", y="Weight_in_gms", hue="Reached.on.Time_Y.N", edgecolor = 'black')
 
+#%%[markdown]
+
+# In this scatter plot we find that the products that do get delivered on time shows 2 characteristics, 
+# first is that they have higher weight than products not getting delivered on time and secondly 
+# they have a more products with higher price.
 
 # %%# customer rating 
 sns.histplot(data, x = "Customer_rating", hue = "Reached.on.Time_Y.N", multiple = "dodge", bins=10)
 plt.title("Histogram for Customer Rating")
 plt.show()
+
+#%%[markdown]
+
+# In this histogram we find that the products that do not get delivered on time have more counts of them being rated by the customers.
+
 
 #%%
 # Statistical Test
@@ -346,6 +399,8 @@ Xvar['Mode_of_Shipment'] = Xvar['Mode_of_Shipment'].map({'Flight': 1, 'Ship':2, 
 Xvar['Product_importance'] = Xvar['Product_importance'].map({'high': 1, 'medium':2, 'low':3})
 Xvar['Warehouse_block'] = Xvar['Warehouse_block'].map({'A': 1, 'B':2, 'C':3, 'D':4, 'F':5})
 Xvar.rename(columns={'Reached.on.Time_Y.N': 'ReachedOnTime'}, inplace=True)
+
+
 # ANOVA
 aov_Customer_care_calls = ols('ReachedOnTime ~ Customer_care_calls', data = Xvar).fit()
 aov_Customer_care_callsT = sm.stats.anova_lm(aov_Customer_care_calls, typ=2)
@@ -395,25 +450,14 @@ stat4, p4, dof4, expected4 = chi2_contingency(contigency4)
 
 print("p values for Warehouse Number, Mode of Shipment, Gender, Product importance (in that order)-", p1,p2,p3,p4 )
 
-#None of them are significant
-
-#%%
-# KNN model
-# 2. confusion matrix
-# 3. accuracy score
-# 4. classification report
-# 5. cross_val_score
-# 6. mean_squared_error
-# 7. precision_recall_curve
-
-<<<<<<< Updated upstream
-=======
+#%%[markdown]
 # We then performed a statistical tests as shown above where we analyze the relationship between 2 categorical variables.
 # We find that the p value for all the variables is much higher than 0.05 which means that we fail to reject the null hypothesis and 
 # we can say that there is no significant relationship between the variables.
 # We can also say that the variables are independent of each other and they cannot be used to predict the outcome variable's condition. 
 # in our case the condition would be whether a product gets delivered on time or not.
 # By that, we can conclude that the variables - Mode of Shipment, Product Importance, Warehouse Block, Customer Rating are not to be used for the model building and prediction.
+
 #%%[markdown]
 # From all the EDA and statistical testings, we can answer the first SMART question.  
 #
@@ -422,7 +466,6 @@ print("p values for Warehouse Number, Mode of Shipment, Gender, Product importan
 # The **numerical variables** including customer care calls, weight/cost of products, offered discounts, and prior purchases **affect** the on-time delivery, whereas **customer rating does not**.   
 #
 # For all **categorical variables**, such as warehouse block, mode of shipment, gender, and importance of products they **do not affect** the on-time delivery.  
->>>>>>> Stashed changes
 
 #%%
 # Data Preprocessing
@@ -667,6 +710,18 @@ plt.legend()
 # show the plot
 plt.show()
 
+
+#%% [markdown]
+
+# This is the third model that we have built for our classification type of problem and it is random forest classification model to look at this problem.
+# We have used the original dataframe for this model to see the way it fits the model and calculated accuracy and model performance metrics like Precision Recall Model Accuracy and plotted the ROC-AUC curve for the model.
+#We find that recall rate of the model is decent but not greatest at 0.65  for products delivered on time and 0.66 for products not delivered on time.
+#This tells us that model is able to find the all the relevant cases within a data set with 65 and 66 percent accuracy for on time and off time delivereies respectively.
+#Moving on, we can see the mean model accuracy also at 65.98 percent for the overall prediction which is above average at best but not the very accurate for this problem.
+#The Receiver Operating Characteristic curve is also plotted for the model and we can see that the area under the curve is 0.736 which is also not the greatest but not the worst either for a model that is using all the variables as features to predict the occurrence of an event mentioned above time and again.
+ 
+
+
 #%%
 # data split
 data2 = data.copy()
@@ -843,6 +898,17 @@ plt.legend()
 # show the plot
 plt.show()
 
+
+#%% [markdown]
+
+# This is the sixth model that we have built for our classification type of problem and it is random forest classification model without insignificant features.
+# We have used the modified dataframe for this model to see the way it fits the model and calculated accuracy and model performance metrics like Precision Recall Model Accuracy and plotted the ROC-AUC curve for the model.
+#We find that recall rate of the model is a little bit improved across the board and is now up to 0.66 for both categories of outputs.
+#This tells us that model is able to find the all the relevant cases within a data set with  66 percent accuracy for on time and off time delivereies respectively.
+#Moving on, we can see the mean model accuracy has dropped a little to 65.35 instead of 65.98 percent for the overall prediction which defeats the purpose of dropping the insignificant features. We will try to tune the model below to see if we can overcome the unforeseen fall in accuracy
+#The Receiver Operating Characteristic curve is also plotted for the model and we can see that the area under the curve is 0.739 which is a minute improvement over the previous model.
+
+
 #%%
 #Finding the best hyperparameters for tuning the Random Forest
 
@@ -868,6 +934,16 @@ rfc_randomSearch.fit(X_train, y_train)
 # print results
 print(rfc_randomSearch.best_params_)
 
+#%% [markdown]
+
+# What we did so far was just enough to give us the above par accuracy but in order to get the best possible values of accuracy metrics, we decided to use the RandomizedSearchCV function 
+# to find out the value for certain parameters in a model. This function is a part of the sklearn library and it is used to find the best parameters for a model by implementing a “fit” and a “score” method. 
+# It also implements “score_samples”, “predict”, “predict_proba”, “decision_function”, “transform” and “inverse_transform” if they are implemented in the estimator used. 
+# The parameters of the estimator used to apply these methods are optimized by cross-validated search over parameter settings.
+# In contrast to GridSearchCV, not all parameter values are tried out, but rather a fixed number of parameter settings is sampled from the specified distributions. The number of parameter settings that are tried is given by n_iter.
+# If all parameters are presented as a list, sampling without replacement is performed. If at least one parameter is given as a distribution, sampling with replacement is used. It is highly recommended to use continuous distributions for continuous parameters.
+# For the scope of this project, we have decided to tune the following parameters for the model -  'n_estimators', 'max_features' and 'max_depth'.
+# When we run the above chunk of code we are left with what is essentially the best suited values for the chosen parameters for the model. We feed them into our models again to see if there is any improvement in the model performance metrics.
 
 
 # %%
@@ -922,6 +998,12 @@ plt.legend()
 # show the plot
 plt.show()
 
+#%% [markdown]
+
+# Not only do we see an improvement(although very little) in the ROC AUC Score which is now at 0.738, we see a huge improvement in the mean model accuracy which we have been calculating so far by using the cross_val_score function which is now at 73.70 percent.
+# This is a very good sign that the model is performing better than before after we specified the tuned parameters for the model.
+
+
 
 # %%
 #Variable Importance Plot
@@ -930,14 +1012,13 @@ X_train2 = pd.DataFrame(X_train2, columns = ['Customer_care_calls',	'Customer_ra
 feature_scores = pd.Series(RandomForestModel3.feature_importances_, index = X_train2.columns).sort_values(ascending=True)
 feature_scores.plot(kind='barh')
 
-<<<<<<< Updated upstream
-=======
 # %% [markdown]
 # We also plotted the variable importance plot to see which variables are the most important for the model to predict the target variable and it is clear that 
 # the weight is the most  important variable followed by the discount offered and the cost of product other than that the lesser important variables are the 
 # customer rating, prior purchases and the customer care calls.
 #
 ## Conclusion  
+
 # While our EDA shows that numeric variables are equally important in figuring out the trends and patterns in data, 
 # we can see that the model is able to best predict the target variable using the Random Forest model with hyperparameter tuning 
 # and numerical features(subset of the all the features). The Random Forest Model has the highest mean prediction accuracy of 73.75% 
@@ -947,8 +1028,3 @@ feature_scores.plot(kind='barh')
 # References - 
 #
 # https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RandomizedSearchCV.html
-
-
->>>>>>> Stashed changes
-# %%
-
