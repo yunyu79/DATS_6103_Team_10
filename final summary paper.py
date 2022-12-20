@@ -1097,6 +1097,15 @@ feature_scores.plot(kind='barh')
 # (66.18 % for singular running), Thus we can recommend the use of Random Forest model over the other models to predict the on-time delivery 
 # for the electronics company.
 
-# References - 
+## References - 
 #
-# https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RandomizedSearchCV.html
+# 1- Official Scikit Learn Documentation - https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RandomizedSearchCV.html
+#
+# 2- Articles - Classification Methods Essentials - Evaluation of Classification Model Accuracy: Essentials (kassambara, 2018) -
+# http://www.sthda.com/english/articles/36-classification-methods-essentials/143-evaluation-of-classification-model-accuracy-essentials/
+#
+# 3- Random Forest Regression (Chaya 2020),  - https://levelup.gitconnected.com/random-forest-regression-209c0f354c84
+#
+# 4- Random Forest Regression in R: Code and Interpretation (Nikola O. 2021) - https://hackernoon.com/random-forest-regression-in-r-code-and-interpretation 
+ 
+# %%
