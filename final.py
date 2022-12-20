@@ -206,6 +206,7 @@ plt.show()
 
 
 # %%
+#Pie Chart using plotly
 integer_columns = data.select_dtypes(include = ['int64'])
 integer_columns.head()
 reached_on_time_y_n = integer_columns['Reached.on.Time_Y.N'].value_counts().reset_index()
@@ -238,10 +239,12 @@ plt.show()
 
 
 # %%
+#boxplot for Reached on time variable against discount offered
 px.box(data, x = 'Reached.on.Time_Y.N', y = 'Discount_offered',color = 'Reached.on.Time_Y.N')
 
 
 # %%
+#boxplot for product importance variable against discount offered
 plt.figure(figsize = (11, 7))
 ax = sns.boxplot(x="Product_importance", y="Discount_offered", hue="Reached.on.Time_Y.N", palette={0: "y", 1: "b"}, data=data).set(title = "Do product_importance and discount affect delivery?")
 plt.show()
@@ -264,6 +267,7 @@ plt.show()
 
 
 # %%
+#boxplot for customer care calls against discount offered
 plt.figure(figsize = (15, 7))
 sns.boxplot(x="Customer_care_calls", y="Discount_offered", hue="Reached.on.Time_Y.N", palette={0: "y", 1: "b"}, data=data).set(title = "Do calls and discount affect delivery?")
 sns.despine(left=True)
@@ -382,16 +386,6 @@ print("p values for Warehouse Number, Mode of Shipment, Gender, Product importan
 #None of them are significant
 
 #%%
-# KNN model
-# 2. confusion matrix
-# 3. accuracy score
-# 4. classification report
-# 5. cross_val_score
-# 6. mean_squared_error
-# 7. precision_recall_curve
-
-
-#%%
 # Data Preprocessing
 # Dealing with Warehouse_block
 n = 'Warehouse_block'
@@ -462,7 +456,7 @@ X_test = sc.transform(X_test)
 
 
 #%%
-
+#K-Nearest Neighbours Model
 from sklearn.neighbors import KNeighborsClassifier
 
 #ACC for KNN
@@ -525,28 +519,11 @@ print(f'The mean accuracy is {accuracies}')
 #%%
 # Logistic Regression 
 
-# encoding
-# data['Gender'] = data['Gender'].map({'M':0, 'F':1})
-# data['Mode_of_Shipment'] = data['Mode_of_Shipment'].map({'Flight': 1, 'Ship':2, 'Road':3})
-# data['Product_importance'] = data['Product_importance'].map({'high': 1, 'medium':2, 'low':3})
-# data['Warehouse_block'] = data['Warehouse_block'].map({'A': 1, 'B':2, 'C':3, 'D':4, 'F':5})
-
-#%%
-## split data
-# X = data.drop("Reached.on.Time_Y.N", axis = 1)
-# Y = data["Reached.on.Time_Y.N"]
-# xtrain, xtest, ytrain, ytest = train_test_split(X, Y, train_size = 0.8, random_state=1)
-
-#%%
-# X = label_4.drop("Reached.on.Time_Y.N", axis = 1)
-# Y = label_4["Reached.on.Time_Y.N"]
-#xtrain, xtest, ytrain, ytest = train_test_split(X, Y, train_size = 0.8, random_state=1)
-
-#%%
 # correlation matrix for variables with Xvar data(diff encoding)
 plt.figure(figsize = (18, 7))
 sns.heatmap(Xvar.iloc[:,:-1].corr(), annot = True, fmt = '0.2f', annot_kws = {'size' : 15}, linewidth = 5, linecolor = 'orange')
 plt.show()
+
 
 #%%
 logitmodel = LogisticRegression()
@@ -562,10 +539,12 @@ cmlogit1 = confusion_matrix(y_test, y_pred)
 print(cmlogit1)
 print(classification_report(y_true, y_pred))
 
+
 #%%
 # Applying k-Fold Cross Validation to logit1
 accuraciesLogit1 = cross_val_score(estimator = logitmodel, X = X_train, y = y_train, cv = 10).mean()
 print(f'The mean accuracy for a logistic model 1 is {accuraciesLogit1}')
+
 
 # %%
 
@@ -595,8 +574,9 @@ plt.legend()
 # show the plot
 plt.show()
 
+
 #%%
-# Random forest
+# Random forest Model
 
 RandomForestModel = RandomForestClassifier(class_weight='balanced')
 RandomForestModel.fit(X_train,y_train)
@@ -614,7 +594,6 @@ print(f'Test accuracy is {RandomForestModel.score(X_test, y_test)}')
 print(f'Model accuracy is {accuracy_score(y_test, RandomForestPredict)}')
 print('Specificity : ', (tn / (tn+fp)) )
 print('Sensitivity : ', (tp / (tp+fn)) )
-
 
 
 # Applying k-Fold Cross Validation
@@ -649,6 +628,7 @@ plt.legend()
 # show the plot
 plt.show()
 
+
 #%%
 # data split
 data2 = data.copy()
@@ -666,7 +646,7 @@ X_test2 = sc.transform(X_test2)
 #%%
 
 #%%
-# Improved knn
+# Improved KNN Model with Relevant/Important features
 from sklearn.neighbors import KNeighborsClassifier
 #ACC for KNN
 fig,ax=plt.subplots(figsize=(10,10))
@@ -722,7 +702,7 @@ accuracies = cross_val_score(estimator = classifier, X = X_train2, y = y_train2,
 print(f'The mean accuracy is {accuracies}')
 
 # %%
-# Logitmodel with the second data
+# Logitmodel with Relevant/Important features
 logitmodel2 = LogisticRegression()
 logitmodel2.fit(X_train2, y_train2)
 print('Logit model accuracy (with the test set):', logitmodel2.score(X_test2, y_test2))
@@ -737,7 +717,7 @@ print(cmlogit2)
 print(classification_report(y_true2, y_logitpred2))
 
 #%%
-# Applying k-Fold Cross Validation to logit2
+# Applying k-Fold Cross Validation to second iteration of logit model
 accuraciesLogit2 = cross_val_score(estimator = logitmodel2, X = X_train2, y = y_train2, cv = 10).mean()
 print(f'The mean accuracy for a logistic model 2 is {accuraciesLogit2}')
 
@@ -771,7 +751,7 @@ plt.show()
 
 #%%
 
-# Random Forest after dropping insignificant features 
+# Random Forest model with relevant/important features
 
 RandomForestModel2 = RandomForestClassifier(class_weight='balanced')
 RandomForestModel2.fit(X_train2,y_train2)
@@ -852,7 +832,16 @@ print(rfc_randomSearch.best_params_)
 
 # %%
 
+#Random forest model with selective and tuned hyperparameters
+
 RandomForestModel3 = RandomForestClassifier(n_estimators=200, max_depth=260, max_features='sqrt', class_weight='balanced')
+
+#Variable Importance Plot for Random forest
+
+X_train2 = pd.DataFrame(X_train2, columns = ['Customer_care_calls',	'Customer_rating',	'Cost_of_the_Product',	'Prior_purchases',	'Discount_offered', 'Weight_in_gms'])
+feature_scores = pd.Series(RandomForestModel3.feature_importances_, index = X_train2.columns).sort_values(ascending=True)
+feature_scores.plot(kind='barh')
+
 RandomForestModel3.fit(X_train2,y_train2)
 RandomForestPredict3 = RandomForestModel3.predict(X_test2)
 print(RandomForestPredict3)
@@ -901,14 +890,3 @@ plt.ylabel('True Positive Rate')
 plt.legend()
 # show the plot
 plt.show()
-
-
-# %%
-#Variable Importance Plot
-
-X_train2 = pd.DataFrame(X_train2, columns = ['Customer_care_calls',	'Customer_rating',	'Cost_of_the_Product',	'Prior_purchases',	'Discount_offered', 'Weight_in_gms'])
-feature_scores = pd.Series(RandomForestModel3.feature_importances_, index = X_train2.columns).sort_values(ascending=True)
-feature_scores.plot(kind='barh')
-
-# %%
-
