@@ -30,28 +30,12 @@ import statsmodels.api as sm
 
 sns.set_style("whitegrid")
 #%% [markdown]
-## 1. Introduction
-#
-# The Black Friday 2022 witnessed consumers spend a record $9.12 billion online, according to Adobe, which monitors sales on retailer websites. It is obvious that E-Commerce is one of the biggest and competitive industries in the world right now. Then how can one E-Commerce have competitive advantage over others?   
-#  
-# According to the survey regarding E-Commerce delivery, 66% of shoppers decided to buy products from one retailer over other because of the delivery services. The delivery service is playing a crucial role when it comes to the online shopping. Now online retailers are providing an estimated delivery date to customers since 83% of them anticipate a guaranteed arrival date. Even when the package is delayed, customers want the retailer to inform them about the delay and new estimated delivery date. The estimated delivery date and being delivered on-time are directly related to positive experiences from customers.   
-#  
-# Based on this, the goal of our project is to **predict the on-time delivery** with data from E-Commerce company. We expect our analysis have valuable business insights regarding delivery services to increase the customer satisfaction for E-Commerce retailers.   
-#
 # We have two **SMART questions** here. 
 # 1. What features affect on-time delivery of products?
 # 2. How can we predict on-time delivery with the higher accuracy for the E-Commerce company?
-#
-# This summary paper is organized as follows:   
-# 1. Introduction 
-# 2. Description of Data 
-# 3. EDA 
-# 4. Models 
-# 5. Conclusion
-# 6. References
 
 #%% [markdown]
-## 2. Description of Data 
+## Description of Data 
 
 # %%
 data = pd.read_csv("dataset.csv")
@@ -78,9 +62,6 @@ data.groupby("Reached.on.Time_Y.N").describe().T
 #%%[markdown]
 # We tried to see the differences on data by the on-time delivery.
 # There are statistical differences in some variables by on-time delivery, including discount and weight. We will identify if this differences are statistically significant by visualization and hypothesis testings to answer the first SMART question which is "What features affect on-time delivery of products?". 
-
-#%% [markdown]
-## 3. EDA
 # %%
 # boxplots for On-time delivery
 integer_cols = data.select_dtypes(include = ['int64'])
@@ -492,7 +473,6 @@ print("p values for Warehouse Number, Mode of Shipment, Gender, Product importan
 # For all **categorical variables**, such as warehouse block, mode of shipment, gender, and importance of products they **do not affect** the on-time delivery.  
 
 #%%[markdown]
-## 4. Models
 ### Data preprocessing
 # • Using one hot encoding to treat all categorical variables, converting from string to 0/1.
 # 
@@ -1097,24 +1077,12 @@ feature_scores.plot(kind='barh')
 # We also plotted the variable importance plot to see which variables are the most important for the model to predict the target variable and it is clear that 
 # the weight is the most  important variable followed by the discount offered and the cost of product other than that the lesser important variables are the 
 # customer rating, prior purchases and the customer care calls.
-#
-## 5. Conclusion  
 
+## Analysis
 # While our EDA shows that numeric variables are equally important in figuring out the trends and patterns in data, 
 # we can see that the model is able to best predict the target variable using the Random Forest model with hyperparameter tuning 
 # and numerical features(subset of the all the features). The Random Forest Model has the highest mean prediction accuracy of 73.75% 
 # (66.18 % for singular running), Thus we can recommend the use of Random Forest model over the other models to predict the on-time delivery 
 # for the electronics company.
 
-## 6. References - 
-#
-# 1- Official Scikit Learn Documentation - https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RandomizedSearchCV.html
-#
-# 2- Articles - Classification Methods Essentials - Evaluation of Classification Model Accuracy: Essentials (kassambara, 2018) -
-# http://www.sthda.com/english/articles/36-classification-methods-essentials/143-evaluation-of-classification-model-accuracy-essentials/
-#
-# 3- Random Forest Regression (Chaya 2020),  - https://levelup.gitconnected.com/random-forest-regression-209c0f354c84
-#
-# 4- Random Forest Regression in R: Code and Interpretation (Nikola O. 2021) - https://hackernoon.com/random-forest-regression-in-r-code-and-interpretation 
- 
 # %%
